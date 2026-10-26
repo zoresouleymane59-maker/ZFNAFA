@@ -1,0 +1,2140 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0A0A0A">
+<script>try{if(localStorage.getItem("zfnafa.theme")==="light"){document.documentElement.setAttribute("data-theme","light")}}catch(e){}</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ZFNAFA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: une colonne mobile, résumé du jour en haut, barre d'onglets fixe en bas avec le bouton "Vente" au centre */
+:root {
+  --bg: #0A0A0A;
+  --surface: #151515;
+  --fg: #F4F1E8;
+  --muted: #A8A296;
+  --line: #2C2C2C;
+  --accent: #FFC21A;
+  --accent-fg: #0A0A0A;
+  --accent-ink: #FFC21A;
+  --red: #E0252C;
+  --red-fg: #FFFFFF;
+  --debt: #FF6A5E;
+  --debt-bg: #3B1613;
+  --ok-bg: #2B2406;
+  --shadow: 0 -6px 24px rgba(0, 0, 0, .6);
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #F6F2E9; --surface: #FFFFFF; --fg: #1A1A1A; --muted: #5B574D; --line: #DDD6C6;
+  --accent: #FFC21A; --accent-fg: #0A0A0A; --accent-ink: #8A5300;
+  --red: #C81E25; --red-fg: #FFFFFF; --debt: #BA2418; --debt-bg: #FBE3E0; --ok-bg: #FFF0C2;
+  --shadow: 0 -6px 24px rgba(0, 0, 0, .12);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.45;
+  padding-inline: 16px; padding-block: 16px 120px;
+}
+.wrap { max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: 16px; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+header.top { display: flex; justify-content: space-between; align-items: center; gap: 8px 12px; }
+header.top .brand { white-space: nowrap; }
+header.top h1 { font-size: 1.6rem; letter-spacing: -.01em; }
+header.top .date { color: var(--muted); font-size: .85rem; text-transform: capitalize; text-align: right; }
+
+.demo { background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; display: flex; gap: 12px; align-items: center; justify-content: space-between; font-size: .88rem; color: var(--muted); }
+.demo button { border: 0; background: var(--fg); color: var(--bg); border-radius: 8px; padding: 8px 12px; font-weight: 600; white-space: nowrap; }
+
+.hero { background: linear-gradient(150deg, var(--red), #9B1319); color: var(--red-fg); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 4px; }
+.hero .lbl { font-size: .85rem; opacity: .85; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+.hero .big { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; line-height: 1.1; }
+.hero .big small { font-size: 1rem; font-weight: 600; opacity: .85; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.stat .lbl { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+.stat .val { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; overflow-wrap: anywhere; }
+.stat.debt .val { color: var(--debt); }
+
+section.block { display: flex; flex-direction: column; gap: 8px; }
+section.block > h2 { font-size: 1.1rem; }
+.list { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; width: 100%; background: none; border: 0; text-align: left; min-width: 0; }
+.row + .row { border-top: 1px solid var(--line); }
+button.row:hover { background: var(--bg); }
+.row .main { flex: 1; min-width: 0; }
+.row .name { font-weight: 600; overflow-wrap: anywhere; }
+.row .sub { color: var(--muted); font-size: .85rem; overflow-wrap: anywhere; }
+.amt { font-weight: 600; white-space: nowrap; }
+.pill { border-radius: 999px; padding: 3px 10px; font-size: .8rem; font-weight: 600; white-space: nowrap; }
+.pill.debt { background: var(--debt-bg); color: var(--debt); }
+.pill.ok { background: var(--ok-bg); color: var(--accent-ink); }
+.empty { color: var(--muted); padding: 16px 14px; font-size: .92rem; }
+.neg { color: var(--debt); }
+.pos { color: var(--accent-ink); }
+
+.search { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.btn { border: 0; border-radius: 12px; padding: 13px 16px; font-weight: 600; background: var(--accent); color: var(--accent-fg); text-align: center; text-decoration: none; display: inline-block; }
+.btn.alt { background: var(--surface); color: var(--fg); border: 1px solid var(--line); }
+.btn.wa { background: #1FA855; color: #fff; }
+.btn.small { padding: 8px 12px; font-size: .88rem; border-radius: 9px; }
+
+nav.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); box-shadow: var(--shadow);
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
+}
+nav.bar .in { max-width: 560px; margin-inline: auto; display: grid; grid-template-columns: 1fr 1fr 1fr auto; align-items: center; gap: 4px; }
+.linklike { flex: 1; min-width: 0; background: none; border: 0; padding: 0; text-align: left; display: flex; flex-direction: column; }
+.linklike .name { font-weight: 600; overflow-wrap: anywhere; }
+.linklike .sub { color: var(--muted); font-size: .85rem; }
+.stat .sub { color: var(--muted); font-size: .82rem; }
+.pill.low { background: var(--debt-bg); color: var(--debt); }
+.qty { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; white-space: nowrap; }
+.field textarea { min-height: 110px; resize: vertical; line-height: 1.4; }
+.hint { color: var(--muted); font-size: .85rem; }
+.gd { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.gd + .gd { margin-top: 8px; }
+.gd summary { cursor: pointer; padding: 13px 14px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.gd summary::-webkit-details-marker { display: none; }
+.gd summary::after { content: "+"; font-family: var(--font-display); font-size: 1.3rem; color: var(--accent-ink); }
+.gd[open] summary::after { content: "−"; }
+.gd .body { padding: 0 14px 14px; color: var(--fg); font-size: .95rem; display: flex; flex-direction: column; gap: 8px; }
+.gd .body ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.gd .body p { margin: 0; color: var(--muted); }
+.contact { background: var(--ok-bg); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.contact b { font-family: var(--font-display); }
+.contact .nb { font-weight: 600; user-select: all; }
+.trialbar { width: 100%; background: var(--ok-bg); color: var(--accent-ink); border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; font-weight: 600; font-size: .9rem; text-align: left; }
+.price { background: var(--surface); border: 1px solid var(--accent); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.price .amount { font-family: var(--font-display); font-weight: 700; font-size: 2.2rem; color: var(--accent-ink); line-height: 1; }
+.price .amount small { font-size: 1rem; color: var(--muted); font-weight: 600; }
+.price ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: .92rem; display: flex; flex-direction: column; gap: 3px; }
+.idrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.idrow .nb { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; letter-spacing: .06em; user-select: all; }
+.undo { background: none; border: 0; padding: 2px 0; color: var(--muted); font-size: .8rem; text-decoration: underline; margin-top: 2px; align-self: flex-start; }
+.foot { display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: center; padding-top: 4px; }
+.banner { background: var(--debt-bg); color: var(--debt); border-radius: 10px; padding: 10px 12px; font-weight: 600; font-size: .9rem; }
+.row .main { display: flex; flex-direction: column; }
+.bizcard { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; background: var(--surface); color: var(--fg); border: 1px solid var(--accent); border-radius: 16px; padding: 14px 16px; cursor: pointer; font: inherit; }
+.bizcard > span:first-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bizcard .lbl { color: var(--accent-ink); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.bizcard .big { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; overflow-wrap: anywhere; }
+.bizcard .sub { color: var(--muted); font-size: .85rem; }
+.bizcard .go { color: var(--accent-ink); font-weight: 700; white-space: nowrap; }
+.todaymark { background: var(--ok-bg); color: var(--accent-ink); border-radius: 6px; padding: 1px 6px; font-size: .75rem; font-weight: 600; margin-left: 6px; }
+.tab { background: none; border: 0; padding: 10px 6px; font-weight: 600; color: var(--muted); border-radius: 10px; }
+.tab[aria-selected="true"] { color: var(--accent-ink); background: var(--ok-bg); }
+.fab { background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 999px; padding: 14px 20px; font-weight: 700; font-family: var(--font-display); font-size: 1rem; }
+
+.sheet-bg { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); display: flex; align-items: flex-end; justify-content: center; z-index: 10; }
+.sheet { background: var(--surface); width: 100%; max-width: 560px; max-height: 92%; overflow-y: auto; border-radius: 18px 18px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+.sheet > * { flex-shrink: 0; }
+.sheet .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.sheet .head h2 { font-size: 1.25rem; }
+.x { background: var(--bg); border: 0; border-radius: 999px; width: 36px; height: 36px; font-size: 1.1rem; flex: none; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label { font-size: .85rem; font-weight: 600; color: var(--muted); }
+.field input, .field select, .field textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
+.field input.bigin { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { text-align: center; padding: 10px 6px; border: 1px solid var(--line); border-radius: 10px; font-size: .88rem; font-weight: 600; color: var(--fg); background: var(--bg); cursor: pointer; }
+.seg input:checked + label { background: var(--accent); color: var(--accent-fg); border-color: var(--accent-ink); }
+.seg input:focus-visible + label { outline: 3px solid var(--accent); outline-offset: 2px; }
+.quick { display: flex; gap: 8px; flex-wrap: wrap; }
+.err { color: var(--debt); font-weight: 600; font-size: .9rem; min-height: 1.2em; }
+.rest { background: var(--debt-bg); color: var(--debt); border-radius: 10px; padding: 10px 12px; font-weight: 600; }
+.rest.zero { background: var(--ok-bg); color: var(--accent-ink); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.actions > * { flex: 1 1 140px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 600; z-index: 20; max-width: calc(100% - 32px); }
+/* Page d'accueil */
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; }
+.landing { display: flex; flex-direction: column; gap: 22px; }
+.landing .lead { display: flex; flex-direction: column; gap: 12px; padding-top: 6px; }
+.landing h1 { font-size: clamp(2.2rem, 9vw, 3rem); line-height: 1.04; letter-spacing: -.02em; }
+.landing h1 em { font-style: normal; color: var(--accent-ink); }
+.landing .sub { color: var(--muted); font-size: 1.08rem; max-width: 34ch; }
+.landing .cta { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.landing .cta .btn { font-size: 1.05rem; padding: 15px 22px; }
+.landing .note { font-size: .85rem; color: var(--muted); }
+.sample { position: relative; background: linear-gradient(150deg, var(--red), #9B1319); color: var(--red-fg); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.sample .tag { position: absolute; top: 12px; right: 14px; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; opacity: .8; font-weight: 600; }
+.sample .lbl { font-size: .8rem; opacity: .85; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+.sample .big { font-family: var(--font-display); font-size: 2.1rem; font-weight: 700; line-height: 1.1; }
+.sample .mini { background: rgba(255, 255, 255, .14); border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; gap: 10px; font-weight: 600; font-size: .92rem; }
+.benefits { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.benefit { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.benefit h3 { font-size: 1.05rem; }
+.benefit p { margin: 0; color: var(--muted); font-size: .95rem; }
+.steps { display: flex; flex-direction: column; gap: 10px; counter-reset: s; padding: 0; margin: 0; list-style: none; }
+.steps li { counter-increment: s; display: flex; gap: 12px; align-items: flex-start; }
+.steps li::before { content: counter(s); flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--ok-bg); color: var(--accent-ink); font-family: var(--font-display); font-weight: 700; display: grid; place-items: center; }
+.steps b { display: block; }
+.steps span { color: var(--muted); font-size: .93rem; }
+.landing h2 { font-size: 1.3rem; }
+.band { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: .88rem; font-weight: 600; background: var(--bg); }
+.hdr-right { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.kebab { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; width: 44px; height: 44px; display: grid; place-items: center; flex: none; padding: 0; }
+.menu-bg { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 10; display: flex; justify-content: flex-end; align-items: flex-start; padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 16px; }
+.menu { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; width: min(330px, 100%); max-height: 100%; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 12px 40px rgba(0, 0, 0, .6); }
+.menu .who { display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 12px; background: var(--bg); text-align: left; border: 0; width: 100%; }
+.menu .who .txt { min-width: 0; display: flex; flex-direction: column; }
+.menu .who .nm { font-weight: 700; overflow-wrap: anywhere; }
+.menu .who .idl { color: var(--muted); font-size: .85rem; }
+.menu .item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 12px; border-radius: 10px; background: none; border: 0; text-align: left; width: 100%; font-weight: 600; color: var(--fg); text-decoration: none; }
+.menu .item:hover { background: var(--bg); }
+.menu .item .pill { white-space: normal; text-align: right; }
+.menu .item > span:first-child { flex: none; }
+.menu hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; width: 100%; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--red); color: #FFC21A; font-family: var(--font-display); font-weight: 700; display: grid; place-items: center; flex: none; font-size: 1.05rem; }
+.avatar.big { width: 64px; height: 64px; font-size: 1.5rem; }
+.prow { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 14px; }
+.prow + .prow { border-top: 1px solid var(--line); }
+.prow .k { color: var(--muted); font-size: .85rem; flex: none; }
+.prow .v { font-weight: 600; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+.kebab { position: relative; }
+.kebab.has::after { content: ""; position: absolute; top: 6px; right: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--red); border: 2px solid var(--surface); }
+.badge { background: var(--red); color: #fff; border-radius: 999px; font-size: .75rem; font-weight: 700; padding: 2px 8px; white-space: nowrap; }
+.cdbox { background: var(--surface); border: 1px solid var(--accent); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.cdbox .ttl { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+.cdgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cdn { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 2px; text-align: center; min-width: 0; }
+.cdn b { display: block; font-family: var(--font-display); font-size: 1.9rem; line-height: 1.05; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.cdn span { color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+.bar2 { height: 8px; border-radius: 999px; background: var(--bg); overflow: hidden; }
+.bar2 i { display: block; height: 100%; background: var(--accent); border-radius: 999px; transition: width 1s linear; }
+.cdbox.urgent, .cdbox.last { border-color: var(--debt); }
+.cdbox.urgent .cdn b, .cdbox.last .cdn b { color: var(--debt); }
+.cdbox.urgent .bar2 i, .cdbox.last .bar2 i { background: var(--debt); }
+.trialbar.urgent, .trialbar.last { background: var(--debt-bg); color: var(--debt); border-color: var(--debt); }
+.msg { padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.msg + .msg { border-top: 1px solid var(--line); }
+.msg.new { box-shadow: inset 3px 0 0 var(--red); }
+.msg .mt { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.msg .mt b { overflow-wrap: anywhere; }
+.msg .md { color: var(--muted); font-size: .78rem; white-space: nowrap; }
+.msg p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .95rem; }
+.msg .from { color: var(--accent-ink); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.msg .btn { align-self: flex-start; margin-top: 4px; }
+@media (max-width: 360px) { .cdn b { font-size: 1.5rem; } .cdbox { padding: 12px; } }
+.voice { display: flex; flex-direction: column; gap: 6px; }
+.btn.rec { background: var(--red); color: #fff; border-color: var(--red); }
+.bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: end; height: 140px; }
+.bcol { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; min-width: 0; }
+.bcol i { display: block; width: 100%; max-width: 34px; background: var(--accent); border-radius: 6px 6px 2px 2px; }
+.bcol span { color: var(--muted); font-size: .7rem; text-transform: capitalize; }
+.bcol b { font-size: .68rem; font-weight: 600; min-height: 1em; }
+.dots { display: flex; gap: 14px; justify-content: center; }
+.dots i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--accent); }
+.dots i.on { background: var(--accent); }
+.keypad { display: grid; grid-template-columns: repeat(3, 76px); gap: 12px; justify-content: center; }
+.key { height: 64px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line); font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; padding: 0; }
+.key.ph { visibility: hidden; }
+.mini-acts { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 2px; }
+.mini-acts .undo { margin-top: 0; }
+a.undo { color: var(--accent-ink); }
+.banner.neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+.offline-note { display: none; }
+body.is-off .offline-note { display: block; }
+@media (prefers-reduced-motion: no-preference) { .btn.rec { animation: pulse 1s infinite; } @keyframes pulse { 50% { opacity: .6; } } }
+.landing > .brand { font-size: 1.5rem; letter-spacing: .02em; }
+.kicker { color: var(--accent-ink); font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }
+.langrow { display: flex; gap: 6px; flex-wrap: wrap; }
+.langrow .lg { background: none; border: 1px solid var(--line); color: var(--fg); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; }
+.langrow .lg.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent-ink); }
+.about { background: none; border: 0; color: var(--accent-ink); font-weight: 600; text-decoration: underline; padding: 4px; }
+@media (min-width: 520px) { .benefits { grid-template-columns: repeat(2, 1fr); } }
+@media (prefers-reduced-motion: no-preference) {
+  .sheet { animation: up .18s ease-out; }
+  @keyframes up { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+</style>
+<style>html{color-scheme:dark;background:#0A0A0A}body{margin:0}</style>
+</head>
+<body>
+
+
+<div class="wrap" id="app"></div>
+<nav class="bar" aria-label="Navigation">
+  <div class="in">
+    <button class="tab" data-act="tab" data-tab="today" id="tab-today">Accueil</button>
+    <button class="tab" data-act="tab" data-tab="clients" id="tab-clients">Clients</button>
+    <button class="tab" data-act="tab" data-tab="stock" id="tab-stock">Stock</button>
+    <button class="fab" data-act="sale">+ Vente</button>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function () {
+  var KEY = "moncahier.v1";
+  var storageOK = true;
+  /* Numéro WhatsApp du propriétaire de ZFNAFA, au format international sans + (ex : 22670123456). Vide : le bouton « Nous écrire » est caché. */
+  var OWNER_WA = "22658286997";
+  var OWNER_SHOW = "+226 58 28 69 97";
+  function ownerLink(msg) { return "https://wa.me/" + OWNER_WA + "?text=" + encodeURIComponent(msg || "Bonjour, j'ai une question sur ZFNAFA."); }
+  function contactBlock() {
+    return '<div class="contact"><b>Besoin d\'explications ?</b><span>Écris-nous sur WhatsApp, nous te répondons et nous t\'aidons à démarrer.</span>' +
+      '<span class="nb num">' + OWNER_SHOW + '</span><a class="btn wa" href="' + ownerLink() + '" target="_blank" rel="noopener">Nous écrire sur WhatsApp</a></div>';
+  }
+  var MODES = ["Espèces", "Orange Money", "Moov Money"];
+  var state = load();
+  var INTRO_KEY = "moncahier.intro";
+  function introSeen() { try { return localStorage.getItem(INTRO_KEY) === "1"; } catch (e) { return false; } }
+  function markIntro() { try { localStorage.setItem(INTRO_KEY, "1"); } catch (e) {} }
+  var view = introSeen() ? "today" : "intro";
+  var query = "";
+  function logo(size) {
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 48 48" role="img" aria-label="ZF"><rect width="48" height="48" rx="10" style="fill:var(--red)"/><text x="24" y="32" text-anchor="middle" font-family="Bricolage Grotesque, Trebuchet MS, sans-serif" font-weight="700" font-size="22" letter-spacing="-1" style="fill:var(--accent)">ZF</text></svg>';
+  }
+  function intro() {
+    return '<div class="landing">' +
+      '<div class="brand">' + logo(36) + 'ZFNAFA</div>' + langRow() +
+      '<div class="lead"><span class="kicker">Le cahier de ton commerce</span><h1>Fini les <em>dettes oubliées.</em></h1>' +
+      '<p class="sub" style="margin:0">Note tes ventes, ce que chaque client te doit et ton stock. Relance les clients sur WhatsApp en un geste.</p></div>' +
+      '<div class="cta"><button class="btn" data-act="start">Essayer gratuitement</button><span class="note">7 jours gratuits, puis 3 000 FCFA par mois. Rien à installer.</span></div>' +
+      '<div class="sample" aria-label="Exemple d\'écran"><span class="tag">Exemple</span><div><div class="lbl">Ventes du jour</div><div class="big num">36 500 FCFA</div></div>' +
+      '<div class="mini"><span>Awa Ouédraogo</span><span class="num">doit 7 500 FCFA</span></div>' +
+      '<div class="mini"><span>Boukary Sawadogo</span><span class="num">doit 8 000 FCFA</span></div></div>' +
+      '<div class="benefits">' +
+      '<div class="benefit"><h3>Vendre en 2 clics</h3><p>Le montant, le client, c\'est noté. Même dans la foule du marché.</p></div>' +
+      '<div class="benefit"><h3>Dettes à jour</h3><p>Tu vois d\'un coup d\'œil qui te doit combien, du plus gros au plus petit.</p></div>' +
+      '<div class="benefit"><h3>Rappel WhatsApp</h3><p>Un message poli est prêt à envoyer, avec le montant exact.</p></div>' +
+      '<div class="benefit"><h3>Stock sous contrôle</h3><p>Note chaque entrée et chaque livraison. Tu sais ce qu\'il reste, et tu es prévenu avant la rupture.</p></div>' +
+      '<div class="benefit"><h3>Dicte tes ventes</h3><p>Dis le montant et le nom du client, la vente se remplit toute seule.</p></div>' +
+      '<div class="benefit"><h3>Marche sans internet</h3><p>Installe l\'application sur ton téléphone. Elle marche même quand le réseau est coupé.</p></div>' +
+      '<div class="benefit"><h3>Bilan et reçus</h3><p>Vois tes chiffres du jour, de la semaine, et envoie un reçu par WhatsApp.</p></div>' +
+      '<div class="benefit"><h3>Code secret</h3><p>Garde tes comptes privés avec un code à 4 chiffres.</p></div></div>' +
+      '<h2>Comment ça marche</h2>' +
+      '<ol class="steps"><li><div><b>Note la vente</b><span>Montant, client, mode de paiement.</span></div></li>' +
+      '<li><div><b>Indique ce qui est payé</b><span>Le reste devient automatiquement une dette.</span></div></li>' +
+      '<li><div><b>Relance quand il faut</b><span>Un geste, et le client reçoit ton rappel sur WhatsApp.</span></div></li></ol>' +
+      '<div class="band"><h2>Pensé pour ton commerce et ton entreprise</h2><div class="chips"><span class="chip">Espèces</span><span class="chip">Orange Money</span><span class="chip">Moov Money</span><span class="chip">En FCFA</span><span class="chip">En français</span></div>' +
+      '<span class="note">Commerçants, boutiques, marchés, restaurants, quincailleries, garages et toutes les entreprises.</span></div>' +
+      '<div class="band"><h2>Tarif</h2><div class="price"><div class="amount">3 000 FCFA<small> / mois</small></div><span class="note">' + TRIAL_DAYS + " jours d'essai gratuit, puis 3 000 FCFA par mois. Paiement par Orange Money ou Wave.</span></div></div>" +
+      '<div class="cta"><button class="btn" data-act="start">Ouvrir mon cahier</button><button class="btn alt" data-act="guide">Voir le guide d\'utilisation</button></div>' +
+      contactBlock() + "</div>";
+  }
+
+  function uid() { return Math.random().toString(36).slice(2, 10); }
+  function dayISO(offset) { var d = new Date(); d.setDate(d.getDate() + (offset || 0)); d.setHours(10, 0, 0, 0); return d.toISOString(); }
+  function sample() {
+    var c = [
+      { id: "c1", name: "Awa Ouédraogo", phone: "70 12 34 56" },
+      { id: "c2", name: "Boukary Sawadogo", phone: "76 45 67 89" },
+      { id: "c3", name: "Mariam Traoré", phone: "65 98 76 54" },
+      { id: "c4", name: "Salif Kaboré", phone: "" }
+    ];
+    var t = [
+      { id: uid(), at: dayISO(-6), clientId: "c1", type: "sale", total: 12500, paid: 5000, mode: "Espèces", note: "Riz 25 kg + huile" },
+      { id: uid(), at: dayISO(-4), clientId: "c2", type: "sale", total: 8000, paid: 0, mode: "Espèces", note: "Sucre, savon" },
+      { id: uid(), at: dayISO(-3), clientId: "c3", type: "sale", total: 4500, paid: 4500, mode: "Orange Money", note: "" },
+      { id: uid(), at: dayISO(-2), clientId: "c1", type: "payment", total: 0, paid: 2000, mode: "Orange Money", note: "Remboursement" },
+      { id: uid(), at: dayISO(-1), clientId: "c4", type: "sale", total: 6000, paid: 3500, mode: "Moov Money", note: "" },
+      { id: uid(), at: dayISO(0), clientId: "c3", type: "sale", total: 9500, paid: 9500, mode: "Espèces", note: "Tomates, oignons" },
+      { id: uid(), at: dayISO(0), clientId: null, type: "sale", total: 2500, paid: 2500, mode: "Espèces", note: "" },
+      { id: uid(), at: dayISO(0), clientId: "c2", type: "sale", total: 7000, paid: 2000, mode: "Espèces", note: "Pâtes, lait" }
+    ];
+    var st = sampleStock();
+    return { demo: true, clients: c, tx: t, products: st.products, moves: st.moves, settings: { shop: "", template: "" } };
+  }
+  function sampleStock() {
+    var products = [
+      { id: "p1", name: "Riz 25 kg", unit: "sacs", min: 5 },
+      { id: "p2", name: "Huile 5 L", unit: "bidons", min: 10 },
+      { id: "p3", name: "Sucre", unit: "cartons", min: 4 },
+      { id: "p4", name: "Savon", unit: "cartons", min: 3 }
+    ];
+    var moves = [
+      { id: uid(), at: dayISO(-6), productId: "p1", type: "in", qty: 40, note: "Fournisseur Bobo" },
+      { id: uid(), at: dayISO(-6), productId: "p2", type: "in", qty: 30, note: "Fournisseur Bobo" },
+      { id: uid(), at: dayISO(-5), productId: "p3", type: "in", qty: 10, note: "" },
+      { id: uid(), at: dayISO(-5), productId: "p4", type: "in", qty: 8, note: "" },
+      { id: uid(), at: dayISO(-3), productId: "p1", type: "out", qty: 22, note: "Livraison grossiste", clientId: null },
+      { id: uid(), at: dayISO(-3), productId: "p4", type: "out", qty: 6, note: "", clientId: null },
+      { id: uid(), at: dayISO(-2), productId: "p2", type: "out", qty: 10, note: "", clientId: null },
+      { id: uid(), at: dayISO(-1), productId: "p3", type: "out", qty: 4, note: "", clientId: null },
+      { id: uid(), at: dayISO(0), productId: "p2", type: "in", qty: 20, note: "Réception du matin" },
+      { id: uid(), at: dayISO(0), productId: "p3", type: "in", qty: 6, note: "" },
+      { id: uid(), at: dayISO(0), productId: "p1", type: "out", qty: 10, note: "Livraison", clientId: "c1" },
+      { id: uid(), at: dayISO(0), productId: "p2", type: "out", qty: 14, note: "Livraison", clientId: "c3" }
+    ];
+    return { products: products, moves: moves };
+  }
+  function load() {
+    try {
+      var s = localStorage.getItem(KEY);
+      if (s) {
+        var raw = JSON.parse(s);
+        var p = cleanState(raw);
+        if (p) {
+          if (raw && (!raw.products || !raw.moves) && p.demo) { var st = sampleStock(); p.products = st.products; p.moves = st.moves; }
+          return p;
+        }
+      }
+    } catch (e) {}
+    return sample();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); storageOK = true; } catch (e) { storageOK = false; } }
+  function cleanState(p) {
+    if (!p || typeof p !== "object" || !Array.isArray(p.clients) || !Array.isArray(p.tx)) return null;
+    var ok = function (a) { return (Array.isArray(a) ? a : []).filter(function (x) { return x && typeof x.id === "string"; }); };
+    return {
+      demo: !!p.demo,
+      clients: ok(p.clients).map(function (c) { return { id: c.id, chg: Math.max(0, +c.chg || 0), name: String(c.name || "Client"), phone: String(c.phone || ""), due: /^\d{4}-\d{2}-\d{2}$/.test(c.due || "") ? c.due : "" }; }),
+      tx: ok(p.tx).map(function (t) { return { id: t.id, at: t.at, clientId: t.clientId || null, type: t.type === "payment" ? "payment" : "sale", total: Math.max(0, +t.total || 0), paid: Math.max(0, +t.paid || 0), mode: t.mode || "Espèces", note: String(t.note || ""), productId: t.productId || null, pqty: +t.pqty || 0, chg: Math.max(0, +t.chg || 0), src: String(t.src || ""), ref: String(t.ref || "") }; }),
+      products: ok(p.products).map(function (x) { return { id: x.id, name: String(x.name || "Produit"), unit: String(x.unit || "unités"), min: Math.max(0, +x.min || 0) }; }),
+      moves: ok(p.moves).map(function (m) { return { id: m.id, at: m.at, productId: m.productId, type: m.type === "out" ? "out" : "in", qty: Math.max(0, +m.qty || 0), note: String(m.note || ""), clientId: m.clientId || null, saleId: m.saleId || null }; }),
+      lost: ok(p.lost).map(function (l) { return { id: l.id, at: l.at, amount: Math.max(0, +l.amount || 0), ref: String(l.ref || "") }; }),
+      biz: {
+        expenses: ok(p.biz && p.biz.expenses).map(function (e) { return { id: e.id, at: e.at, cat: String(e.cat || "Autre"), label: String(e.label || ""), amount: Math.max(0, +e.amount || 0), staffId: e.staffId || null }; }),
+        staff: ok(p.biz && p.biz.staff).map(function (x) { return { id: x.id, name: String(x.name || "Employé"), role: String(x.role || ""), salary: Math.max(0, +x.salary || 0) }; }),
+        orders: ok(p.biz && p.biz.orders).map(function (o) { return { id: o.id, at: o.at, ref: String(o.ref || ""), kind: String(o.kind || ""), note: String(o.note || ""), total: Math.max(0, +o.total || 0), step: Math.max(0, +o.step || 0), done: !!o.done, saleId: o.saleId || null }; })
+      },
+      settings: { shop: String((p.settings && p.settings.shop) || ""), template: String((p.settings && p.settings.template) || "") }
+    };
+  }
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]; }); }
+  function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " FCFA"; }
+  function num(v) { var n = parseInt(String(v).replace(/[^\d]/g, ""), 10); return isNaN(n) ? 0 : n; }
+  function sameDay(iso) { var a = new Date(iso), b = new Date(); return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+  function dShort(iso) { return new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }); }
+  function client(id) { return state.clients.filter(function (c) { return c.id === id; })[0]; }
+  function debtOf(id) {
+    return state.tx.reduce(function (s, t) {
+      if (t.clientId !== id) return s;
+      return s + (t.type === "sale" ? t.total - t.paid : -t.paid);
+    }, 0);
+  }
+  function totalDebt() { return state.clients.reduce(function (s, c) { return s + Math.max(0, debtOf(c.id)); }, 0); }
+  function toast(msg) {
+    var el = document.getElementById("toast"); el.textContent = msg; el.hidden = false;
+    clearTimeout(toast.t); toast.t = setTimeout(function () { el.hidden = true; }, 2200);
+  }
+  var DEFAULT_TPL = "Bonjour {prenom}, petit rappel : vous avez un solde de {montant} à régler{boutique}. Merci beaucoup !";
+  function reminderText(c, debt) {
+    var s = state.settings || {};
+    var t = s.template || DEFAULT_TPL;
+    var shop = s.shop ? " chez " + s.shop : "";
+    return t.replace(/\{prenom\}/g, c.name.split(" ")[0]).replace(/\{montant\}/g, fmt(debt)).replace(/\{boutique\}/g, shop);
+  }
+  function waLink(c, debt) {
+    var d = (c.phone || "").replace(/\D/g, "");
+    if (!d) return "";
+    if (d.length === 8) d = "226" + d;
+    return "https://wa.me/" + d + "?text=" + encodeURIComponent(reminderText(c, debt));
+  }
+  /* ---------- Stock ---------- */
+  function product(id) { return state.products.filter(function (p) { return p.id === id; })[0]; }
+  function stockOf(id) { return state.moves.reduce(function (s, m) { return m.productId === id ? s + (m.type === "in" ? m.qty : -m.qty) : s; }, 0); }
+  function lowStock() { return state.products.filter(function (p) { return p.min > 0 && stockOf(p.id) <= p.min; }); }
+  function todayStr() { var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()); }
+  function dateFromInput(v) {
+    if (!v || v === todayStr()) return new Date().toISOString();
+    var a = v.split("-"); return new Date(+a[0], +a[1] - 1, +a[2], 12).toISOString();
+  }
+
+  /* ---------- Rendu des pages ---------- */
+  function render() {
+    if (pinLocked) { document.querySelector("nav.bar").hidden = true; document.getElementById("app").innerHTML = pinScreen(); return; }
+    var needSignup = view !== "intro" && !profile;
+    var needStep = view !== "intro" && !!profile && profile.notified === false;
+    var locked = view !== "intro" && !needSignup && !needStep && licStatus().state === "locked";
+    document.querySelector("nav.bar").hidden = view === "intro" || needSignup || needStep || locked;
+    if (view === "intro") { document.getElementById("app").innerHTML = intro(); return; }
+    if (needSignup) { document.getElementById("app").innerHTML = signupScreen(); return; }
+    if (needStep) { document.getElementById("app").innerHTML = lastStepScreen(); return; }
+    if (locked) { document.getElementById("app").innerHTML = lockScreen(); return; }
+    document.getElementById("tab-today").setAttribute("aria-selected", view === "today");
+    document.getElementById("tab-clients").setAttribute("aria-selected", view === "clients");
+    document.getElementById("tab-stock").setAttribute("aria-selected", view === "stock");
+    var h ='<header class="top"><div class="brand">' + logo(30) + 'ZFNAFA</div><div class="hdr-right"><span class="date">' +
+      new Date().toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "long" }) + '</span><button class="kebab" data-act="menu" aria-label="Menu" aria-haspopup="menu">' + KEBAB + '</button></div></header>';
+    h += '<div class="banner neutral offline-note">Pas d\'internet. ZFNAFA marche quand même : tes données sont dans ce téléphone.</div>';
+    if (!storageOK) h += '<div class="banner">Ce navigateur ne peut pas garder tes données. Elles seront perdues à la fermeture. Fais une sauvegarde (menu ⋮ en haut à droite, puis Sauvegarde).</div>';
+    var ei = endInfo();
+    if (ei && (view === "today" ? (ei.kind === "trial" || ei.level) : (ei.level === "urgent" || ei.level === "last"))) h += bannerEnd(ei);
+    if (view === "today") h += extraBanners();
+    if (state.demo) h += '<div class="demo"><span>Ce sont des exemples pour essayer.</span><button data-act="clear">Effacer les exemples</button></div>';
+    h += view === "today" ? today() : view === "clients" ? clients() : stockView();
+    document.getElementById("app").innerHTML = h;
+    updateDot();
+  }
+  function bannerEnd(ei) {
+    var t = '<span data-cdtext>' + remainText(ei.ms) + "</span>";
+    var txt = ei.kind === "trial"
+      ? (ei.level === "last" ? "Dernier jour d'essai gratuit ! Il reste " + t + ". Voir l'abonnement" : "Essai gratuit : il reste " + t + ". Voir l'abonnement")
+      : (ei.level === "last" ? "Dernier jour ! Ton abonnement se termine dans " + t + ". Renouveler" : "Ton abonnement se termine dans " + t + ". Renouveler");
+    return '<button class="trialbar ' + ei.level + '" data-act="sub">' + txt + "</button>";
+  }
+
+  function today() {
+    var tx = state.tx.filter(function (t) { return sameDay(t.at); });
+    var ventes = tx.filter(function (t) { return t.type === "sale"; }).reduce(function (s, t) { return s + t.total; }, 0);
+    var encaisse = tx.reduce(function (s, t) { return s + t.paid; }, 0);
+    var dettes = totalDebt();
+    var h = isBiz() ? bizCard() : "";
+    h += '<div class="hero"><span class="lbl">Ventes du jour</span><span class="big num">' + fmt(ventes).replace(" FCFA", "") + ' <small>FCFA</small></span></div>';
+    h += '<div class="pair"><div class="stat"><div class="lbl">Encaissé</div><div class="val num">' + fmt(encaisse) + '</div></div>' +
+      '<div class="stat debt"><div class="lbl">On me doit</div><div class="val num">' + fmt(dettes) + '</div></div></div>';
+    h += '<div class="actions"><button class="btn alt" data-act="report" data-r="today">Voir mon bilan</button><button class="btn alt" data-act="archives">Archives par jour</button></div>';
+
+    var debtors = state.clients.map(function (c) { return { c: c, d: debtOf(c.id), l: dueDays(c) }; })
+      .filter(function (x) { return x.d > 0; }).sort(function (a, b) {
+        var al = a.l !== null && a.l <= 0, bl = b.l !== null && b.l <= 0;
+        if (al !== bl) return al ? -1 : 1;
+        if (al && bl && a.l !== b.l) return a.l - b.l;
+        return b.d - a.d;
+      }).slice(0, 5);
+    var late = lateCount();
+    h += '<section class="block"><h2>Qui me doit</h2>' + (late ? '<div class="rest">' + late + " client" + (late > 1 ? "s" : "") + " à relancer aujourd'hui</div>" : "") + '<div class="list">';
+    if (!debtors.length) h += '<div class="empty">Personne ne te doit rien. Les dettes apparaîtront ici quand tu vendras à crédit.</div>';
+    debtors.forEach(function (x) {
+      var wa = waLink(x.c, x.d);
+      h += '<div class="row"><button class="linklike" data-act="client" data-id="' + x.c.id + '"><span class="name">' + esc(x.c.name) + '</span><span class="sub neg num">doit ' + fmt(x.d) + dueLabel(x.c) + "</span></button>" +
+        (wa ? '<a class="btn wa small" href="' + wa + '" target="_blank" rel="noopener">Relancer</a>'
+            : '<button class="btn alt small" data-act="client" data-id="' + x.c.id + '">Ajouter le n°</button>') + "</div>";
+    });
+    h += "</div>" + (debtors.length ? '<div class="hint">« Relancer » ouvre WhatsApp avec le message déjà écrit. Il reste à appuyer sur Envoyer.</div>' : "") + "</section>";
+    var low = lowStock();
+    if (low.length) {
+      h += '<section class="block"><h2>Stock bas</h2><div class="list">';
+      low.forEach(function (p) { h += '<button class="row" data-act="product" data-id="' + p.id + '"><div class="main"><div class="name">' + esc(p.name) + '</div></div><span class="pill low num">reste ' + stockOf(p.id) + " " + esc(p.unit) + "</span></button>"; });
+      h += "</div></section>";
+    }
+
+    h += '<section class="block"><h2>Opérations du jour</h2><div class="list">';
+    if (!tx.length) h += '<div class="empty">Aucune vente aujourd\'hui. Touche « + Vente » pour commencer.</div>';
+    tx.slice().reverse().forEach(function (t) { h += txRow(t); });
+    h += "</div></section>";
+    h += contactBlock();
+    return h;
+  }
+
+  function undoBtn(kind, id) { return '<button class="undo" data-act="askdel" data-kind="' + kind + '" data-id="' + id + '">Annuler cette opération</button>'; }
+  function txRow(t) {
+    var c = t.clientId ? client(t.clientId) : null;
+    var who = c ? c.name : "Client de passage";
+    var pr = t.productId ? product(t.productId) : null;
+    var sub = (t.type === "sale" ? "Vente" : "Paiement reçu") + " · " + t.mode + (pr ? " · " + t.pqty + " " + pr.unit + " " + pr.name : "") + (t.note ? " · " + t.note : "");
+    var right = t.type === "sale"
+      ? '<span class="amt num">' + fmt(t.total) + "</span>"
+      : '<span class="amt num pos">+ ' + fmt(t.paid) + "</span>";
+    var rest = t.type === "sale" && t.total - t.paid > 0 ? '<div class="sub neg num">Reste ' + fmt(t.total - t.paid) + "</div>" : "";
+    if (t.chg > 0) rest += '<div class="sub num">Monnaie restante ' + fmt(t.chg) + "</div>";
+    return '<div class="row"><div class="main"><div class="name">' + esc(who) + '</div><div class="sub">' + esc(sub) + "</div>" + rest + txActs(t) + "</div>" + right + "</div>";
+  }
+
+  function clients() {
+    var q = query.trim().toLowerCase();
+    var list = state.clients.filter(function (c) { return !q || c.name.toLowerCase().indexOf(q) > -1; })
+      .sort(function (a, b) { return debtOf(b.id) - debtOf(a.id); });
+    var h = '<input class="search" id="q" type="search" placeholder="Chercher un client" value="' + esc(query) + '" aria-label="Chercher un client">';
+    h += '<div class="actions"><button class="btn alt" data-act="newclient">+ Nouveau client</button><button class="btn alt" data-act="settings">Mon message de rappel</button></div>';
+    h += '<div class="list">';
+    if (!list.length) h += '<div class="empty">' + (state.clients.length ? "Aucun client ne correspond." : "Aucun client pour l'instant. Ajoute le premier avec « + Nouveau client ».") + "</div>";
+    list.forEach(function (c) {
+      var d = debtOf(c.id);
+      h += '<button class="row" data-act="client" data-id="' + c.id + '"><div class="main"><div class="name">' + esc(c.name) + '</div><div class="sub">' + esc(c.phone || "Sans numéro") + (c.chg > 0 ? " · monnaie à lui rendre " + fmt(c.chg) : "") + "</div></div>" +
+        (d > 0 ? '<span class="pill debt num">' + fmt(d) + "</span>" : '<span class="pill ok">À jour</span>') + "</button>";
+    });
+    return h + "</div>";
+  }
+
+  /* ---------- Fenêtres (sheets) ---------- */
+  function openSheet(title, body) {
+    document.getElementById("overlay").innerHTML =
+      '<div class="sheet-bg" data-act="close"><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(title) + '">' +
+      '<div class="head"><h2>' + esc(title) + '</h2><button class="x" data-act="close" aria-label="Fermer">✕</button></div>' + body + "</div></div>";
+    var first = document.querySelector("#overlay input:not([type=radio]), #overlay select");
+    if (first) first.focus();
+  }
+  function closeSheet() { document.getElementById("overlay").innerHTML = ""; }
+
+  function modeField(name) {
+    return '<div class="field"><label>Mode de paiement</label><div class="seg">' + MODES.map(function (m, i) {
+      return '<input type="radio" name="' + name + '" id="' + name + i + '" value="' + m + '"' + (i === 0 ? " checked" : "") + '><label for="' + name + i + '">' + m + "</label>";
+    }).join("") + "</div></div>";
+  }
+  function checkedMode(name) { var r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : MODES[0]; }
+
+  function saleSheet(preId) {
+    var opts = '<option value="">Client de passage</option>' + state.clients.map(function (c) {
+      return '<option value="' + c.id + '"' + (c.id === preId ? " selected" : "") + ">" + esc(c.name) + "</option>";
+    }).join("") + '<option value="__new">+ Nouveau client</option>';
+    openSheet("Nouvelle vente", voiceBox() +
+      '<div class="field"><label for="s-total">Montant de la vente (FCFA)</label><input class="bigin num" id="s-total" inputmode="numeric" placeholder="0" autocomplete="off"></div>' +
+      '<div class="field"><label for="s-client">Client</label><select id="s-client">' + opts + "</select></div>" +
+      '<div id="s-new" hidden><div class="field"><label for="s-newname">Nom du nouveau client</label><input id="s-newname" autocomplete="off"></div>' +
+      '<div class="field"><label for="s-newphone">Téléphone (pour les rappels WhatsApp)</label><input id="s-newphone" inputmode="tel" autocomplete="off"></div></div>' +
+      '<div class="field"><label for="s-paid">Montant payé maintenant (FCFA)</label><input class="num" id="s-paid" inputmode="numeric" placeholder="Laisser vide si tout est payé" autocomplete="off">' +
+      '<div class="quick"><button class="btn alt small" data-act="allpaid" type="button">Tout payé</button><button class="btn alt small" data-act="credit" type="button">Tout à crédit</button></div></div>' +
+      '<div id="s-rest" class="rest zero">Reste à payer : 0 FCFA</div>' +
+      '<div class="field"><label for="s-chg">Monnaie restante à rendre au client (FCFA)</label><input class="num" id="s-chg" inputmode="numeric" placeholder="0" autocomplete="off"><div class="hint">Le client a donné plus et tu n\'as pas pu rendre la monnaie ? Écris-la ici : elle est notée au nom du client. Sinon laisse 0.</div></div>' +
+      '<div id="s-due" hidden><div class="field"><label for="s-duedate">Il doit payer avant le (facultatif)</label><input type="date" id="s-duedate">' +
+      '<div class="quick"><button class="btn alt small" data-act="duein" data-d="3" type="button">3 jours</button><button class="btn alt small" data-act="duein" data-d="7" type="button">7 jours</button><button class="btn alt small" data-act="duein" data-d="15" type="button">15 jours</button><button class="btn alt small" data-act="duein" data-d="30" type="button">30 jours</button></div>' +
+      '<div class="hint">Le jour venu, il apparaît dans « Qui me doit » avec un rappel.</div></div></div>' +
+      modeField("s-mode") +
+      (state.products.length ? '<div class="field"><label for="s-prod">Produit vendu (met le stock à jour)</label><select id="s-prod"><option value="">Aucun, ne pas toucher au stock</option>' +
+        state.products.map(function (p) { return '<option value="' + p.id + '">' + esc(p.name) + " (" + stockOf(p.id) + " " + esc(p.unit) + ")</option>"; }).join("") + "</select></div>" +
+        '<div id="s-pq" hidden><div class="field"><label for="s-pqty">Quantité vendue</label><input class="num" id="s-pqty" inputmode="numeric" placeholder="0" autocomplete="off"></div></div>' : "") +
+      '<div class="field"><label for="s-note">Note (facultatif)</label><input id="s-note" placeholder="Ex : riz 25 kg" autocomplete="off"></div>' +
+      '<div class="err" id="s-err" role="alert"></div>' +
+      '<button class="btn" data-act="savesale">Enregistrer la vente</button>');
+  }
+  function updateRest() {
+    var t = num(document.getElementById("s-total").value), pv = document.getElementById("s-paid").value.trim();
+    var p = pv === "" ? t : num(pv);
+    var r = document.getElementById("s-rest"); var rest = Math.max(0, t - p);
+    r.textContent = "Reste à payer : " + fmt(rest); r.className = "rest" + (rest === 0 ? " zero" : "");
+    var dw = document.getElementById("s-due"); if (dw) dw.hidden = rest === 0;
+  }
+  function saveSale() {
+    var total = num(document.getElementById("s-total").value);
+    var paidRaw = document.getElementById("s-paid").value.trim();
+    var paid = paidRaw === "" ? total : num(paidRaw);
+    var cid = document.getElementById("s-client").value;
+    var err = document.getElementById("s-err");
+    if (total <= 0) { err.textContent = "Entre le montant de la vente."; return; }
+    if (paid > total) { err.textContent = "Le montant payé ne peut pas dépasser la vente."; return; }
+    var ps = document.getElementById("s-prod"), pid = ps ? ps.value : "", pq = pid ? num(document.getElementById("s-pqty").value) : 0;
+    if (pid) {
+      if (pq <= 0) { err.textContent = "Entre la quantité vendue."; return; }
+      if (pq > stockOf(pid)) { err.textContent = "Stock insuffisant : il reste " + stockOf(pid) + " " + product(pid).unit + "."; return; }
+    }
+    var chg = num(document.getElementById("s-chg").value);
+    if (paid < total && !cid) { err.textContent = "Choisis un client pour noter la dette."; return; }
+    if (chg > 0 && !cid) { err.textContent = "Choisis un client pour noter sa monnaie restante."; return; }
+    if (cid === "__new") {
+      var nm = document.getElementById("s-newname").value.trim();
+      if (!nm) { err.textContent = "Écris le nom du nouveau client."; return; }
+      var nc = { id: uid(), name: nm, phone: document.getElementById("s-newphone").value.trim() };
+      state.clients.push(nc); cid = nc.id;
+    }
+    var sid = uid(), now = new Date().toISOString();
+    state.tx.push({ id: sid, at: now, clientId: cid || null, type: "sale", total: total, paid: paid, mode: checkedMode("s-mode"), note: document.getElementById("s-note").value.trim(), productId: pid || null, pqty: pq, chg: chg });
+    if (chg > 0 && cid) { var cc = client(cid); if (cc) cc.chg = (cc.chg || 0) + chg; }
+    if (pid) state.moves.push({ id: uid(), at: now, productId: pid, type: "out", qty: pq, note: "Vente", clientId: cid || null, saleId: sid });
+    if (paid < total && cid) { var dd = val("s-duedate"), dc = client(cid); if (dc && /^\d{4}-\d{2}-\d{2}$/.test(dd)) dc.due = dd; }
+    save(); closeSheet(); render(); toast(chg > 0 ? "Vente et monnaie restante enregistrées" : paid < total ? "Vente et dette enregistrées" : "Vente enregistrée");
+  }
+
+  function clientSheet(id) {
+    var c = client(id); if (!c) return;
+    var d = debtOf(id);
+    var hist = state.tx.filter(function (t) { return t.clientId === id; }).slice().reverse();
+    var wa = d > 0 ? waLink(c, d) : "";
+    var h = '<div class="pair"><div class="stat ' + (d > 0 ? "debt" : "") + '"><div class="lbl">Solde dû</div><div class="val num">' + fmt(Math.max(0, d)) + '</div></div>' +
+      '<div class="stat"><div class="lbl">Téléphone</div><div class="val" style="font-size:1.05rem">' + esc(c.phone || "—") + "</div></div></div>";
+    if (c.chg > 0) h += '<div class="rest" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span>Monnaie à lui rendre : <b class="num">' + fmt(c.chg) + '</b></span><button class="btn small" data-act="chgsheet" data-id="' + id + '">Rendre la monnaie</button></div>';
+    h += '<div class="actions">';
+    if (d > 0) h += '<button class="btn" data-act="paysheet" data-id="' + id + '">Encaisser un paiement</button>';
+    h += '<button class="btn alt" data-act="saleclient" data-id="' + id + '">Nouvelle vente</button>';
+    if (wa) h += '<a class="btn wa" href="' + wa + '" target="_blank" rel="noopener">Relancer sur WhatsApp</a>';
+    else if (d > 0) h += '<div class="empty" style="flex-basis:100%;padding:0">Ajoute un numéro pour envoyer un rappel WhatsApp.</div>';
+    h += "</div>";
+    h += '<div class="field"><label for="c-phone">Modifier le téléphone</label><div class="actions"><input id="c-phone" inputmode="tel" value="' + esc(c.phone) + '" style="padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg)"><button class="btn alt small" data-act="savephone" data-id="' + id + '" style="flex:0 0 auto">Enregistrer</button></div></div>';
+    if (d > 0) h += '<div class="field"><label for="c-due">Il doit payer avant le</label><div class="actions"><input type="date" id="c-due" value="' + esc(c.due || "") + '" style="padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg)"><button class="btn alt small" data-act="savedue" data-id="' + id + '" style="flex:0 0 auto">Enregistrer</button></div>' + (dueLabel(c) ? '<div class="hint neg">' + esc(dueLabel(c).replace(/^ · /, "")) + "</div>" : "") + "</div>";
+    h += '<h3 style="font-size:1rem">Historique</h3><div class="list">';
+    if (!hist.length) h += '<div class="empty">Pas encore d\'opération.</div>';
+    hist.forEach(function (t) { h += '<div class="row"><div class="main"><div class="name">' + (t.type === "sale" ? "Vente " + fmt(t.total) : "Paiement reçu") + '</div><div class="sub">' + dShort(t.at) + " · " + t.mode + (t.note ? " · " + esc(t.note) : "") + "</div>" + txActs(t) + "</div>" +
+      (t.type === "sale" ? (t.total - t.paid > 0 ? '<span class="amt num neg">Reste ' + fmt(t.total - t.paid) + "</span>" : '<span class="pill ok">Payé</span>') : '<span class="amt num pos">+ ' + fmt(t.paid) + "</span>") + "</div>"; });
+    h += "</div>";
+    openSheet(c.name, h);
+  }
+
+  function chgSheet(id) {
+    var c = client(id); if (!c || !(c.chg > 0)) return;
+    openSheet("Rendre la monnaie",
+      '<div class="rest">Monnaie à rendre à ' + esc(c.name.split(" ")[0]) + " : " + fmt(c.chg) + "</div>" +
+      '<div class="field"><label for="g-amt">Montant rendu maintenant (FCFA)</label><input class="bigin num" id="g-amt" inputmode="numeric" value="' + c.chg + '" autocomplete="off"></div>' +
+      '<div class="err" id="g-err" role="alert"></div><button class="btn" data-act="savechg" data-id="' + id + '">Monnaie rendue</button>');
+  }
+  function saveChg(id) {
+    var c = client(id), a = num(document.getElementById("g-amt").value), err = document.getElementById("g-err"); if (!c) return;
+    if (a <= 0) { err.textContent = "Entre le montant rendu."; return; }
+    if (a > (c.chg || 0)) { err.textContent = "Ce montant dépasse la monnaie restante (" + fmt(c.chg) + ")."; return; }
+    c.chg = (c.chg || 0) - a; save(); render(); clientSheet(id); toast("Monnaie rendue");
+  }
+  function totalChg() { return state.clients.reduce(function (s, c) { return s + (c.chg || 0); }, 0); }
+  function paySheet(id) {
+    var c = client(id), d = debtOf(id);
+    openSheet("Paiement de " + c.name.split(" ")[0],
+      '<div class="rest">Solde dû : ' + fmt(d) + "</div>" +
+      '<div class="field"><label for="p-amt">Montant reçu (FCFA)</label><input class="bigin num" id="p-amt" inputmode="numeric" value="' + d + '" autocomplete="off"></div>' +
+      modeField("p-mode") + '<div class="err" id="p-err" role="alert"></div>' +
+      '<button class="btn" data-act="savepay" data-id="' + id + '">Enregistrer le paiement</button>');
+  }
+  function savePay(id) {
+    var a = num(document.getElementById("p-amt").value), d = debtOf(id), err = document.getElementById("p-err");
+    if (a <= 0) { err.textContent = "Entre le montant reçu."; return; }
+    if (a > d) { err.textContent = "Ce montant dépasse la dette de " + fmt(d) + "."; return; }
+    state.tx.push({ id: uid(), at: new Date().toISOString(), clientId: id, type: "payment", total: 0, paid: a, mode: checkedMode("p-mode"), note: "Remboursement" });
+    if (debtOf(id) <= 0) { var c0 = client(id); if (c0) c0.due = ""; }
+    save(); closeSheet(); render(); toast("Paiement enregistré");
+  }
+
+  function newClientSheet() {
+    openSheet("Nouveau client",
+      '<div class="field"><label for="n-name">Nom</label><input id="n-name" autocomplete="off"></div>' +
+      '<div class="field"><label for="n-phone">Téléphone (pour les rappels WhatsApp)</label><input id="n-phone" inputmode="tel" autocomplete="off"></div>' +
+      '<div class="err" id="n-err" role="alert"></div><button class="btn" data-act="saveclient">Ajouter le client</button>');
+  }
+
+  /* ---------- Page Stock ---------- */
+  function sumQty(a) { return a.reduce(function (s, m) { return s + m.qty; }, 0); }
+  function moveRow(m, withDate) {
+    var p = product(m.productId); if (!p) return "";
+    var c = m.clientId ? client(m.clientId) : null;
+    var sub = (m.type === "in" ? "Entrée" : "Sortie") + " · " + (withDate ? (sameDay(m.at) ? "aujourd'hui" : dShort(m.at)) : "") + (c ? " · " + esc(c.name) : "") + (m.note ? " · " + esc(m.note) : "");
+    return '<div class="row"><div class="main"><div class="name">' + esc(p.name) + '</div><div class="sub">' + sub.replace("·  ·", "·") + '</div>' + undoBtn("move", m.id) + '</div><span class="qty num ' + (m.type === "in" ? "pos" : "neg") + '">' + (m.type === "in" ? "+ " : "− ") + m.qty + " " + esc(p.unit) + "</span></div>";
+  }
+  function stockView() {
+    var mv = state.moves.filter(function (m) { return sameDay(m.at); });
+    var ins = mv.filter(function (m) { return m.type === "in"; }), outs = mv.filter(function (m) { return m.type === "out"; });
+    var h = '<div class="pair"><div class="stat"><div class="lbl">Marchandises reçues</div><div class="val num">' + sumQty(ins) + '</div><div class="sub">aujourd\'hui · ' + ins.length + " réception" + (ins.length > 1 ? "s" : "") + '</div></div>' +
+      '<div class="stat"><div class="lbl">Livraisons et sorties</div><div class="val num">' + sumQty(outs) + '</div><div class="sub">aujourd\'hui · ' + outs.length + " sortie" + (outs.length > 1 ? "s" : "") + "</div></div></div>";
+    h += '<div class="actions"><button class="btn" data-act="movein">+ Entrée</button><button class="btn alt" data-act="moveout">+ Sortie / livraison</button><button class="btn alt" data-act="newproduct">+ Nouveau produit</button></div>';
+    h += '<section class="block"><h2>Mon stock</h2><div class="list">';
+    if (!state.products.length) h += '<div class="empty">Aucun produit. Ajoute le premier avec « + Nouveau produit », avec sa quantité de départ.</div>';
+    state.products.slice().sort(function (a, b) { return a.name.localeCompare(b.name, "fr"); }).forEach(function (p) {
+      var q = stockOf(p.id), low = p.min > 0 && q <= p.min;
+      h += '<button class="row" data-act="product" data-id="' + p.id + '"><div class="main"><div class="name">' + esc(p.name) + '</div>' + (p.min > 0 ? '<div class="sub">Alerte à ' + p.min + " " + esc(p.unit) + "</div>" : "") + "</div>" +
+        (low ? '<span class="pill low">Stock bas</span>' : "") + '<span class="qty num">' + q + " " + esc(p.unit) + "</span></button>";
+    });
+    h += "</div></section>";
+    h += '<section class="block"><h2>Derniers mouvements</h2><div class="list">';
+    var last = state.moves.slice().sort(function (a, b) { return new Date(b.at) - new Date(a.at); }).slice(0, 25);
+    if (!last.length) h += '<div class="empty">Chaque entrée et chaque sortie notée apparaîtra ici, avec sa date.</div>';
+    last.forEach(function (m) { h += moveRow(m, true); });
+    return h + "</div></section>";
+  }
+
+  function moveSheet(type, preId) {
+    var isIn = type === "in";
+    var opts = '<option value="">Choisir un produit</option>' + state.products.map(function (p) {
+      return '<option value="' + p.id + '"' + (p.id === preId ? " selected" : "") + ">" + esc(p.name) + " (" + stockOf(p.id) + " " + esc(p.unit) + ")</option>";
+    }).join("") + (isIn ? '<option value="__new">+ Nouveau produit</option>' : "");
+    var copts = '<option value="">Aucun client précis</option>' + state.clients.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + "</option>"; }).join("");
+    openSheet(isIn ? "Entrée de marchandise" : "Sortie / livraison",
+      '<div class="field"><label for="m-prod">Produit</label><select id="m-prod">' + opts + "</select></div>" +
+      '<div id="m-new" hidden><div class="field"><label for="m-newname">Nom du produit</label><input id="m-newname" placeholder="Ex : Riz 25 kg" autocomplete="off"></div>' +
+      '<div class="field"><label for="m-newunit">Unité</label><input id="m-newunit" placeholder="sacs, cartons, kg, bidons…" autocomplete="off"></div></div>' +
+      '<div class="field"><label for="m-qty">Quantité ' + (isIn ? "reçue" : "sortie") + '</label><input class="bigin num" id="m-qty" inputmode="numeric" placeholder="0" autocomplete="off"></div>' +
+      '<div class="field"><label for="m-date">Date</label><input type="date" id="m-date" value="' + todayStr() + '"></div>' +
+      (isIn ? "" : '<div class="field"><label for="m-client">Livré à</label><select id="m-client">' + copts + "</select></div>") +
+      '<div class="field"><label for="m-note">Note (facultatif)</label><input id="m-note" placeholder="' + (isIn ? "Ex : fournisseur, numéro de bon" : "Ex : livraison, casse, usage perso") + '" autocomplete="off"></div>' +
+      '<div class="err" id="m-err" role="alert"></div><button class="btn" data-act="savemove" data-type="' + type + '">Enregistrer</button>');
+  }
+  function saveMove(type) {
+    var err = document.getElementById("m-err"), pid = document.getElementById("m-prod").value, qty = num(document.getElementById("m-qty").value);
+    if (!pid) { err.textContent = "Choisis un produit."; return; }
+    if (pid === "__new") {
+      var nm = document.getElementById("m-newname").value.trim();
+      if (!nm) { err.textContent = "Écris le nom du nouveau produit."; return; }
+      if (qty <= 0) { err.textContent = "Entre la quantité."; return; }
+      var np = { id: uid(), name: nm, unit: document.getElementById("m-newunit").value.trim() || "unités", min: 0 };
+      state.products.push(np); pid = np.id;
+    }
+    if (qty <= 0) { err.textContent = "Entre la quantité."; return; }
+    if (type === "out" && qty > stockOf(pid)) { err.textContent = "Stock insuffisant : il reste " + stockOf(pid) + " " + product(pid).unit + "."; return; }
+    var cl = document.getElementById("m-client");
+    state.moves.push({ id: uid(), at: dateFromInput(document.getElementById("m-date").value), productId: pid, type: type, qty: qty, note: document.getElementById("m-note").value.trim(), clientId: cl && cl.value ? cl.value : null });
+    save(); closeSheet(); render(); toast(type === "in" ? "Entrée enregistrée" : "Sortie enregistrée");
+  }
+
+  function newProductSheet() {
+    openSheet("Nouveau produit",
+      '<div class="field"><label for="n-pname">Nom du produit</label><input id="n-pname" placeholder="Ex : Huile 5 L" autocomplete="off"></div>' +
+      '<div class="field"><label for="n-punit">Unité</label><input id="n-punit" placeholder="sacs, cartons, kg, bidons…" autocomplete="off"></div>' +
+      '<div class="field"><label for="n-pqty">Quantité en stock aujourd\'hui</label><input class="num" id="n-pqty" inputmode="numeric" placeholder="0" autocomplete="off"></div>' +
+      '<div class="field"><label for="n-pmin">Prévenir quand il en reste moins de (facultatif)</label><input class="num" id="n-pmin" inputmode="numeric" placeholder="Ex : 5" autocomplete="off"></div>' +
+      '<div class="err" id="n-perr" role="alert"></div><button class="btn" data-act="saveproduct">Ajouter le produit</button>');
+  }
+  function saveProduct() {
+    var nm = document.getElementById("n-pname").value.trim();
+    if (!nm) { document.getElementById("n-perr").textContent = "Écris le nom du produit."; return; }
+    var p = { id: uid(), name: nm, unit: document.getElementById("n-punit").value.trim() || "unités", min: num(document.getElementById("n-pmin").value) };
+    state.products.push(p);
+    var q = num(document.getElementById("n-pqty").value);
+    if (q > 0) state.moves.push({ id: uid(), at: new Date().toISOString(), productId: p.id, type: "in", qty: q, note: "Stock de départ" });
+    save(); closeSheet(); render(); toast("Produit ajouté");
+  }
+  function productSheet(id) {
+    var p = product(id); if (!p) return;
+    var q = stockOf(id), hist = state.moves.filter(function (m) { return m.productId === id; }).sort(function (a, b) { return new Date(b.at) - new Date(a.at); });
+    var h = '<div class="pair"><div class="stat ' + (p.min > 0 && q <= p.min ? "debt" : "") + '"><div class="lbl">En stock</div><div class="val num">' + q + " " + esc(p.unit) + '</div></div>' +
+      '<div class="stat"><div class="lbl">Alerte</div><div class="val num" style="font-size:1.05rem">' + (p.min > 0 ? "sous " + p.min : "—") + "</div></div></div>" +
+      '<div class="actions"><button class="btn" data-act="movein" data-id="' + id + '">+ Entrée</button><button class="btn alt" data-act="moveout" data-id="' + id + '">+ Sortie</button></div>' +
+      '<h3 style="font-size:1rem">Historique</h3><div class="list">';
+    if (!hist.length) h += '<div class="empty">Aucun mouvement.</div>';
+    hist.forEach(function (m) { h += moveRow(m, true); });
+    openSheet(p.name, h + "</div>");
+  }
+
+  function settingsSheet() {
+    var s = state.settings || {};
+    openSheet("Mon message de rappel",
+      '<div class="field"><label for="st-shop">Nom de ma boutique (facultatif)</label><input id="st-shop" placeholder="Ex : Boutique Toro" value="' + esc(s.shop || "") + '" autocomplete="off"></div>' +
+      '<div class="field"><label for="st-tpl">Message envoyé au client</label><textarea id="st-tpl">' + esc(s.template || DEFAULT_TPL) + "</textarea></div>" +
+      '<div class="hint">Garde {prenom}, {montant} et {boutique} dans le texte : ils sont remplacés automatiquement pour chaque client.</div>' +
+      '<div class="actions"><button class="btn" data-act="savesettings">Enregistrer</button><button class="btn alt" data-act="resettpl">Message d\'origine</button></div>');
+  }
+
+  /* ---------- Abonnement ---------- */
+  var PRICE = "3 000 FCFA par mois";
+  var TRIAL_DAYS = 7;
+  var LIC_KEY = "zfcahier.license";
+  /* Clé publique : elle vérifie les codes d'activation. La clé privée reste dans le générateur de codes, jamais dans l'application. */
+  var PUB_JWK = {"kty": "EC", "crv": "P-256", "x": "kgcFqDxVVwXa-ipXaoGgr12M9XsQ_vs7L5F-ldtmRas", "y": "6jef7wz5yhZ6TfaSFARmrKK7PlgajQUzlEbSLid_V8E"};
+  var lic = loadLic();
+  function newId() { var a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", s = ""; for (var i = 0; i < 8; i++) s += a.charAt(Math.floor(Math.random() * a.length)); return s.slice(0, 4) + "-" + s.slice(4); }
+  function loadLic() {
+    try { var r = JSON.parse(localStorage.getItem(LIC_KEY)); if (r && r.id && r.start) return r; } catch (e) {}
+    var l = { id: newId(), start: todayStr(), until: "" };
+    try { localStorage.setItem(LIC_KEY, JSON.stringify(l)); } catch (e) {}
+    return l;
+  }
+  function saveLic() { try { localStorage.setItem(LIC_KEY, JSON.stringify(lic)); } catch (e) {} }
+  function keyParts(k) { var a = k.split("-"); return [+a[0], +a[1] - 1, +a[2]]; }
+  function endOfDay(k) { var a = keyParts(k); return new Date(a[0], a[1], a[2], 23, 59, 59); }
+  function startOfDay(k) { var a = keyParts(k); return new Date(a[0], a[1], a[2], 0, 0, 0); }
+  function fmtDate(k) { return endOfDay(k).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }); }
+  function licStatus() {
+    var now = new Date();
+    if (lic.until && endOfDay(lic.until) >= now) { var ms = endOfDay(lic.until) - now; return { state: "active", until: lic.until, ms: ms, days: Math.ceil(ms / 864e5) }; }
+    var end = startOfDay(lic.start).getTime() + TRIAL_DAYS * 864e5;
+    if (now.getTime() <= end) { var m2 = end - now.getTime(); return { state: "trial", ms: m2, days: Math.max(1, Math.ceil(m2 / 864e5)) }; }
+    return { state: "locked" };
+  }
+  /* Niveaux d'alerte : soon = 7 jours ou moins (abonné), urgent = 3 jours ou moins, last = dernier jour */
+  function endInfo() {
+    var st = licStatus(); if (st.state === "locked") return null;
+    var d = st.ms / 864e5, lvl = "";
+    if (d <= 1) lvl = "last"; else if (d <= 3) lvl = "urgent"; else if (st.state === "active" && d <= 7) lvl = "soon";
+    return { kind: st.state, ms: st.ms, level: lvl, until: st.until };
+  }
+  function two(n) { return (n < 10 ? "0" : "") + n; }
+  function parts(ms) { if (ms < 0) ms = 0; var t = Math.floor(ms / 1000); return { d: Math.floor(t / 86400), h: Math.floor(t % 86400 / 3600), m: Math.floor(t % 3600 / 60), s: t % 60 }; }
+  function remainText(ms) {
+    var p = parts(ms);
+    if (p.d >= 1) return p.d + " jour" + (p.d > 1 ? "s" : "") + (p.h ? " " + p.h + " h" : "");
+    if (p.h >= 1) return p.h + " h " + two(p.m) + " min";
+    return Math.max(1, p.m) + " min";
+  }
+  function cdGrid(ms) {
+    var p = parts(ms);
+    return '<div class="cdgrid" role="timer" aria-label="Temps restant"><div class="cdn"><b data-u="d">' + p.d + "</b><span>jours</span></div>" +
+      '<div class="cdn"><b data-u="h">' + two(p.h) + "</b><span>heures</span></div>" +
+      '<div class="cdn"><b data-u="m">' + two(p.m) + "</b><span>minutes</span></div>" +
+      '<div class="cdn"><b data-u="s">' + two(p.s) + "</b><span>secondes</span></div></div>";
+  }
+  function barPct(ms) {
+    if (!lic.since || !lic.until) return -1;
+    var total = endOfDay(lic.until) - startOfDay(lic.since);
+    return total > 0 ? Math.max(0, Math.min(100, ms / total * 100)) : -1;
+  }
+  function unb64u(str) {
+    str = str.replace(/-/g, "+").replace(/_/g, "/"); while (str.length % 4) str += "=";
+    var bin = atob(str), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return a;
+  }
+  function activate(raw) {
+    var bad = function (m) { return Promise.resolve({ ok: false, msg: m }); };
+    var m = String(raw || "").match(/ZF\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/);
+    if (!m) return bad("Ce code n'est pas valide. Copie-le en entier, il commence par ZF.");
+    var parts = m[0].split("."), payload, sig;
+    try { payload = unb64u(parts[1]); sig = unb64u(parts[2]); } catch (e) { return bad("Ce code n'est pas valide. Copie-le en entier."); }
+    if (typeof crypto === "undefined" || !crypto.subtle) return bad("Ce navigateur ne peut pas vérifier le code. Ouvre l'application avec Chrome.");
+    return crypto.subtle.importKey("jwk", PUB_JWK, { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"])
+      .then(function (key) { return crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, sig, payload); })
+      .then(function (valid) {
+        if (!valid) return { ok: false, msg: "Ce code n'est pas valide." };
+        var t = new TextDecoder().decode(payload).split("|");
+        if (t[0] !== lic.id) return { ok: false, msg: "Ce code a été fait pour un autre identifiant." };
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(t[1] || "")) return { ok: false, msg: "Ce code n'est pas valide." };
+        if (endOfDay(t[1]) < new Date()) return { ok: false, msg: "Ce code est expiré. Demande un nouveau code." };
+        if (lic.until && t[1] < lic.until) return { ok: false, msg: "Ce code est plus ancien que ton abonnement actuel. Ton abonnement n'a pas changé." };
+        var was = lic.until && endOfDay(lic.until) >= new Date();
+        if (!was || !lic.since) lic.since = todayStr();
+        lic.until = t[1]; saveLic();
+        addMsg({ id: "sys-act-" + t[1], at: todayStr(), from: "app", title: "Abonnement activé", text: "Ton abonnement est actif jusqu'au " + fmtDate(t[1]) + ". Merci pour ta confiance !", act: "" });
+        return { ok: true, until: t[1] };
+      })
+      .catch(function () { return { ok: false, msg: "Ce code n'est pas valide." }; });
+  }
+  /* Numéros de paiement de Zofar. Laisse vide pour cacher une ligne. */
+  var PAY_OM = "+226 57 26 66 42";
+  var PAY_WAVE = "+226 55 65 57 64";
+  function payRow(name, n) { return '<div class="idrow"><span><b>' + name + '</b> <span class="nb num">' + esc(n) + '</span></span><button class="btn alt small" data-act="copytxt" data-txt="' + esc(n) + '">Copier</button></div>'; }
+  function payNumbers() {
+    var rows = (PAY_OM ? payRow("Orange Money", PAY_OM) : "") + (PAY_WAVE ? payRow("Wave", PAY_WAVE) : "");
+    return rows || '<div class="hint">Écris-nous sur WhatsApp pour recevoir le numéro de paiement.</div>';
+  }
+  function paidHref(via, from) {
+    return ownerLink("Bonjour, j'ai payé mon abonnement ZFNAFA (3 000 FCFA par mois) par " + via + " depuis le numéro " + (from || "(à préciser)") + ". Mon identifiant : " + lic.id);
+  }
+  function updatePaid() {
+    var v = document.getElementById("pay-via"), f = document.getElementById("pay-from"), a = document.getElementById("paid-link");
+    if (v && f && a) a.href = paidHref(v.value, f.value.trim());
+  }
+  function subBody(locked, renew) {
+    var st = licStatus(), s = "";
+    if (!locked && !renew) s += st.state === "active" ? '<div class="rest zero">Abonnement actif jusqu\'au ' + fmtDate(st.until) + "</div>"
+      : '<div class="rest zero">Essai gratuit : ' + st.days + " jour" + (st.days > 1 ? "s" : "") + " restant" + (st.days > 1 ? "s" : "") + "</div>";
+    s += '<div class="price"><div class="amount">3 000 FCFA<small> / mois</small></div><ul><li>Ventes, dettes et stock sans limite</li><li>Rappels WhatsApp pour tes clients</li><li>Aide et guide sur WhatsApp</li></ul></div>' +
+      '<div class="field"><label>Mon identifiant (il est envoyé avec ton message)</label><div class="idrow"><span class="nb num">' + lic.id + '</span><button class="btn alt small" data-act="copyid">Copier</button></div></div>' +
+      '<div class="field"><label>1. Envoie 3 000 FCFA</label>' + payNumbers() + "</div>" +
+      '<div class="field"><label for="pay-via">2. Dis-nous comment tu as payé</label><select id="pay-via"><option>Orange Money</option><option>Wave</option></select>' +
+      '<input id="pay-from" inputmode="tel" placeholder="Le numéro avec lequel tu as payé" autocomplete="off"></div>' +
+      '<a id="paid-link" class="btn wa" href="' + paidHref("Orange Money", "") + '" target="_blank" rel="noopener">J\'ai payé, prévenir sur WhatsApp</a>' +
+      '<div class="hint">Nous vérifions ton paiement et tu reçois ton code d\'activation sur WhatsApp. Ensuite, colle-le ci-dessous.</div>' +
+      '<div class="field"><label for="ac-code">J\'ai reçu mon code</label><textarea id="ac-code" placeholder="Colle ici ton code (il commence par ZF.)"></textarea></div>' +
+      '<div class="err" id="ac-err" role="alert"></div><button class="btn" data-act="activate">Activer mon abonnement</button>';
+    return s;
+  }
+  function barHtml(ms) {
+    var pc = barPct(ms);
+    return pc < 0 ? "" : '<div class="bar2" data-bar aria-hidden="true"><i style="width:' + pc.toFixed(2) + '%"></i></div>';
+  }
+  function chronoBody(ei) {
+    var warn = { soon: "Ton abonnement se termine bientôt. Renouvelle-le pour ne pas être bloqué.", urgent: "Plus que quelques jours. Renouvelle maintenant pour ne pas être bloqué.", last: "C'est le dernier jour. Renouvelle maintenant, sinon l'application se bloquera à minuit." }[ei.level];
+    var s = '<div class="cdbox ' + ei.level + '"><div class="ttl">Temps restant</div>' + cdGrid(ei.ms) + barHtml(ei.ms) + "</div>";
+    s += '<div class="list"><div class="prow"><span class="k">Statut</span><span class="pill ' + (ei.level ? "debt" : "ok") + '">' + (ei.level ? "Bientôt fini" : "Actif") + "</span></div>" +
+      '<div class="prow"><span class="k">Actif jusqu\'au</span><span class="v">' + fmtDate(ei.until) + " (inclus)</span></div>" +
+      (lic.since ? '<div class="prow"><span class="k">Activé le</span><span class="v">' + fmtDate(lic.since) + "</span></div>" : "") +
+      '<div class="prow"><span class="k">Mon identifiant</span><span class="v num">' + esc(lic.id) + "</span></div></div>";
+    if (warn) s += '<div class="rest">' + warn + "</div>";
+    s += '<details class="gd"' + (ei.level ? " open" : "") + "><summary>Renouveler mon abonnement</summary><div class=\"body\">" + subBody(false, true) + "</div></details>";
+    return s;
+  }
+  function subSheet() {
+    var ei = endInfo();
+    if (ei && ei.kind === "active") {
+      openSheet("Mon abonnement", chronoBody(ei));
+      var sh = document.querySelector("#overlay .sheet"); if (sh) sh.scrollTop = 0;
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    } else openSheet("Abonnement", subBody(false));
+  }
+  function lockScreen() {
+    return '<div class="landing"><div class="brand">' + logo(36) + 'ZFNAFA</div>' +
+      '<div class="lead"><h1>Ton essai est <em>terminé.</em></h1><p class="sub" style="margin:0">Tes données sont gardées, rien n\'est perdu. Abonne-toi pour continuer à noter tes ventes, tes dettes et ton stock.</p></div>' +
+      '<div class="band">' + subBody(true) + "</div>" +
+      '<div class="foot"><button class="about" data-act="backup">Sauvegarder mes données</button><button class="about" data-act="guide">Guide</button></div>' + contactBlock() + "</div>";
+  }
+
+  /* ---------- Inscription ---------- */
+  /* Adresse d'un formulaire en ligne (par exemple Formspree) qui reçoit chaque inscription. Vide : l'inscription reste dans le téléphone et le client peut te la signaler sur WhatsApp. Ne marche qu'une fois l'application sur ton propre site. */
+  var LEAD_URL = "";
+  var PROFILE_KEY = "zfcahier.profile";
+  var profile = loadProfile();
+  function loadProfile() { try { var r = JSON.parse(localStorage.getItem(PROFILE_KEY)); if (r && r.name && r.phone) return r; } catch (e) {} return null; }
+  function saveProfile() { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch (e) {} }
+  function sendLead() {
+    if (!LEAD_URL || typeof fetch === "undefined") return;
+    try {
+      fetch(LEAD_URL, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ identifiant: lic.id, nom: profile.name, boutique: profile.shop, whatsapp: profile.phone, ville: profile.city, activite: profile.type, date: profile.at }) }).catch(function () {});
+    } catch (e) {}
+  }
+  function signupScreen() {
+    return '<div class="landing"><div class="brand">' + logo(36) + 'ZFNAFA</div>' + langRow() +
+      '<div class="lead"><h1>Crée ton <em>compte</em></h1><p class="sub" style="margin:0">Ça prend 30 secondes. Ton essai gratuit de ' + TRIAL_DAYS + ' jours commence tout de suite.</p></div>' +
+      '<div class="band">' +
+      '<div class="field"><label for="su-name">Ton nom</label><input id="su-name" autocomplete="name"></div>' +
+      '<div class="field"><label for="su-shop">Nom de ta boutique ou de ton activité</label><input id="su-shop" autocomplete="organization" placeholder="Ex : Boutique Toro, Restaurant Chez Toro"></div>' +
+      '<div class="field"><label for="su-phone">Ton numéro WhatsApp</label><input id="su-phone" inputmode="tel" autocomplete="tel" placeholder="Ex : 70 12 34 56"></div>' +
+      '<div class="field"><label for="su-city">Ta ville</label><input id="su-city" autocomplete="address-level2" placeholder="Ex : Ouagadougou"></div>' +
+      '<div class="field"><label for="su-type">Ton activité</label><select id="su-type">' + typeOptions("") + '</select><div class="hint">Commerçant : cahier de ventes, dettes et stock. Entreprise (restaurant, quincaillerie, garage…) : en plus, gestion des commandes, des dépenses, de l\'équipe et du bénéfice.</div></div>' +
+      '<div class="hint">Ton numéro sert à t\'aider et à te prévenir pour ton abonnement. Nous ne le partageons pas avec d\'autres.</div>' +
+      '<div class="err" id="su-err" role="alert"></div><button class="btn" data-act="signup">Créer mon compte et commencer</button></div></div>';
+  }
+  function val(id) { var el = document.getElementById(id); return el ? String(el.value || "").trim() : ""; }
+  function signup() {
+    var err = document.getElementById("su-err"), name = val("su-name"), phone = val("su-phone");
+    if (!name) { err.textContent = "Écris ton nom."; return false; }
+    if (phone.replace(/\D/g, "").length < 8) { err.textContent = "Écris ton numéro WhatsApp en entier."; return false; }
+    profile = { name: name, shop: val("su-shop"), phone: phone, city: val("su-city"), type: val("su-type"), at: new Date().toISOString(), notified: false };
+    saveProfile();
+    if (!lic.until) { lic.start = todayStr(); saveLic(); }
+    if (profile.shop) { if (!state.settings) state.settings = { shop: "", template: "" }; if (!state.settings.shop) { state.settings.shop = profile.shop; save(); } }
+    sendLead();
+    view = "today"; render(); window.scrollTo(0, 0);
+    return true;
+  }
+  function signupMessage() {
+    return "Bonjour, je m'inscris sur ZFNAFA.\nNom : " + profile.name + "\nBoutique : " + (profile.shop || "-") + "\nVille : " + (profile.city || "-") + "\nActivité : " + profile.type + "\nWhatsApp : " + profile.phone + "\nIdentifiant : " + lic.id;
+  }
+  function lastStepScreen() {
+    return '<div class="landing"><div class="brand">' + logo(36) + 'ZFNAFA</div>' +
+      '<div class="lead"><h1>Dernière <em>étape</em></h1><p class="sub" style="margin:0">Touche le bouton, puis envoie le message dans WhatsApp. Ton compte est alors confirmé.</p></div>' +
+      '<div class="band"><a class="btn wa" data-act="notified" href="' + ownerLink(signupMessage()) + '" target="_blank" rel="noopener">Confirmer mon inscription sur WhatsApp</a>' +
+      '<div class="hint">WhatsApp s\'ouvre avec ton message déjà écrit. Appuie sur Envoyer, puis reviens ici.</div></div></div>';
+  }
+  function markNotified() {
+    profile.notified = true; saveProfile();
+    setTimeout(function () { render(); window.scrollTo(0, 0); toast("Merci ! Ton compte est confirmé."); }, 800);
+  }
+
+  /* ---------- Menu et profil ---------- */
+  var KEBAB = '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2.2" style="fill:var(--fg)"/><circle cx="12" cy="12" r="2.2" style="fill:var(--fg)"/><circle cx="12" cy="19" r="2.2" style="fill:var(--fg)"/></svg>';
+  function initials() {
+    var n = String((profile && profile.name) || "?").trim().split(/\s+/);
+    return esc(((n[0] || "?").charAt(0) + (n.length > 1 ? n[n.length - 1].charAt(0) : "")).toUpperCase());
+  }
+  function subStatusText() {
+    var st = licStatus();
+    if (st.state === "active") return { cls: "ok", txt: "Actif jusqu'au " + fmtDate(st.until) };
+    if (st.state === "trial") return { cls: "ok", txt: "Essai gratuit, " + st.days + " jour" + (st.days > 1 ? "s" : "") + " restant" + (st.days > 1 ? "s" : "") };
+    return { cls: "debt", txt: "Essai terminé" };
+  }
+  function menuSheet() {
+    var ss = subStatusText();
+    document.getElementById("overlay").innerHTML =
+      '<div class="menu-bg" data-act="close"><div class="menu" role="menu" aria-label="Menu">' +
+      '<button class="who" role="menuitem" data-act="profile"><span class="avatar">' + initials() + '</span><span class="txt"><span class="nm">' + esc(profile ? profile.name : "Mon compte") + '</span><span class="idl num">ID : ' + esc(lic.id) + "</span></span></button><hr>" +
+      '<button class="item" role="menuitem" data-act="profile">Mon profil</button>' +
+      '<button class="item" role="menuitem" data-act="connector">Connecteur</button>' +
+      '<button class="item" role="menuitem" data-act="theme"><span>Thème</span><span class="pill ok">' + themeName(theme) + "</span></button>" +
+      '<button class="item" role="menuitem" data-act="lang"><span>Langue</span><span class="pill ok">' + langName(lang) + "</span></button>" +
+      '<button class="item" role="menuitem" data-act="messages"><span>Messages</span>' + (unread() ? '<span class="badge">' + unread() + (unread() > 1 ? " nouveaux" : " nouveau") + "</span>" : "") + "</button>" +
+      '<button class="item" role="menuitem" data-act="sub"><span>Abonnement</span><span class="pill ' + ss.cls + '">' + esc(ss.txt) + "</span></button>" +
+      (isBiz() ? '<button class="item" role="menuitem" data-act="biz">Mon entreprise</button>' : "") +
+      '<button class="item" role="menuitem" data-act="report" data-r="today">Bilan et chiffres</button>' +
+      '<button class="item" role="menuitem" data-act="archives">Archives par jour</button>' +
+      '<button class="item" role="menuitem" data-act="guide">Guide d\'utilisation</button>' +
+      '<button class="item" role="menuitem" data-act="settings">Message de rappel WhatsApp</button>' +
+      '<button class="item" role="menuitem" data-act="pin"><span>Code secret</span>' + (pinData ? '<span class="pill ok">Activé</span>' : "") + "</button>" +
+      '<button class="item" role="menuitem" data-act="backup">Sauvegarde et fichiers</button>' +
+      (deferredInstall && !isStandalone() ? '<button class="item" role="menuitem" data-act="install">Installer l\'application</button>' : "") +
+      '<a class="item" role="menuitem" href="' + ownerLink() + '" target="_blank" rel="noopener">Contacter ZFNAFA sur WhatsApp</a><hr>' +
+      '<button class="item" role="menuitem" data-act="intro">À propos de ZFNAFA</button></div></div>';
+    var first = document.querySelector("#overlay .who"); if (first && first.focus) first.focus();
+  }
+  function profileSheet() {
+    if (!profile) return;
+    var ss = subStatusText();
+    var since = profile.at ? new Date(profile.at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "-";
+    var rows = [["Nom", profile.name], ["Boutique", profile.shop || "-"], ["Ville", profile.city || "-"], ["Activité", profile.type || "-"], ["WhatsApp", profile.phone], ["Inscrit le", since]];
+    openSheet("Mon profil",
+      '<div class="idrow" style="gap:14px;flex-wrap:nowrap"><span class="avatar big">' + initials() + '</span><span style="min-width:0"><b style="font-family:var(--font-display);font-size:1.25rem;overflow-wrap:anywhere">' + esc(profile.name) + '</b><br><span class="hint">' + esc(profile.shop || "") + "</span></span></div>" +
+      '<div class="field"><label>Mon identifiant</label><div class="idrow"><span class="nb num">' + esc(lic.id) + '</span><button class="btn alt small" data-act="copyid">Copier</button></div><div class="hint">Cet identifiant est unique. Donne-le quand tu écris à ZFNAFA pour ton abonnement.</div></div>' +
+      '<div class="list">' + rows.map(function (r) { return '<div class="prow"><span class="k">' + r[0] + '</span><span class="v">' + esc(r[1]) + "</span></div>"; }).join("") +
+      '<div class="prow"><span class="k">Abonnement</span><span class="pill ' + ss.cls + '">' + esc(ss.txt) + "</span></div></div>" +
+      '<div class="actions"><button class="btn" data-act="editprofile">Modifier</button><button class="btn alt" data-act="sub">Abonnement</button></div>');
+  }
+  function editProfileSheet() {
+    openSheet("Modifier mon profil",
+      '<div class="field"><label for="pe-name">Ton nom</label><input id="pe-name" autocomplete="name" value="' + esc(profile.name) + '"></div>' +
+      '<div class="field"><label for="pe-shop">Nom de ta boutique ou de ton activité</label><input id="pe-shop" autocomplete="organization" placeholder="Ex : Boutique Toro" value="' + esc(profile.shop) + '"></div>' +
+      '<div class="field"><label for="pe-phone">Ton numéro WhatsApp</label><input id="pe-phone" inputmode="tel" autocomplete="tel" value="' + esc(profile.phone) + '"></div>' +
+      '<div class="field"><label for="pe-city">Ta ville</label><input id="pe-city" autocomplete="address-level2" value="' + esc(profile.city) + '"></div>' +
+      '<div class="field"><label for="pe-type">Ton activité</label><select id="pe-type">' + typeOptions(profile.type) + "</select></div>" +
+      '<div class="hint">Ces changements restent dans ton téléphone. Ton identifiant ne change pas. Écris-nous sur WhatsApp si ton numéro a changé.</div>' +
+      '<div class="err" id="pe-err" role="alert"></div><button class="btn" data-act="saveprofile">Enregistrer</button>');
+  }
+  function saveProfileEdit() {
+    var err = document.getElementById("pe-err"), name = val("pe-name"), phone = val("pe-phone");
+    if (!name) { err.textContent = "Écris ton nom."; return; }
+    if (phone.replace(/\D/g, "").length < 8) { err.textContent = "Écris ton numéro WhatsApp en entier."; return; }
+    var oldShop = profile.shop;
+    profile.name = name; profile.shop = val("pe-shop"); profile.phone = phone; profile.city = val("pe-city"); profile.type = val("pe-type");
+    saveProfile();
+    if (!state.settings) state.settings = { shop: "", template: "" };
+    if (!state.settings.shop || state.settings.shop === oldShop) { state.settings.shop = profile.shop; save(); }
+    closeSheet(); render(); toast("Profil mis à jour");
+  }
+
+  /* ---------- Messages ---------- */
+  var MSG_KEY = "zfcahier.msgs";
+  /* Fichier des messages de ZF : il se trouve à côté de l'application, sur ton site. Les clients le lisent à l'ouverture. */
+  var FEED_URL = "messages.json";
+  var msgs = loadMsgs();
+  var lastFetch = 0;
+  function loadMsgs() { try { var r = JSON.parse(localStorage.getItem(MSG_KEY)); if (Array.isArray(r)) return r.filter(function (m) { return m && typeof m.id === "string"; }); } catch (e) {} return []; }
+  function saveMsgs() { try { localStorage.setItem(MSG_KEY, JSON.stringify(msgs.slice(-60))); } catch (e) {} }
+  function hasMsg(id) { return msgs.some(function (m) { return m.id === id; }); }
+  function addMsg(m) { if (hasMsg(m.id)) return false; m.read = false; msgs.push(m); saveMsgs(); updateDot(); return true; }
+  function unread() { return msgs.filter(function (m) { return !m.read; }).length; }
+  function updateDot() { var k = document.querySelector(".kebab"); if (k) { k.classList.toggle("has", unread() > 0); k.setAttribute("aria-label", unread() ? "Menu, " + unread() + " nouveau message" + (unread() > 1 ? "s" : "") : "Menu"); } }
+  function syncAutoMessages() {
+    var ei = endInfo(); if (!ei || !ei.level) return;
+    var key = ei.kind === "trial" ? lic.start : ei.until, endTxt = ei.kind === "trial" ? new Date(startOfDay(lic.start).getTime() + TRIAL_DAYS * 864e5 - 1000).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) : fmtDate(ei.until);
+    var T = {
+      active: { soon: ["Ton abonnement se termine bientôt", "Il te reste moins de 7 jours. Ton abonnement se termine le " + endTxt + ". Renouvelle-le pour continuer sans interruption."],
+        urgent: ["Plus que 3 jours d'abonnement", "Ton abonnement se termine le " + endTxt + ". Renouvelle maintenant pour ne pas être bloqué."],
+        last: ["Dernier jour d'abonnement", "Ton abonnement se termine aujourd'hui. Renouvelle maintenant, sinon l'application se bloquera à minuit."] },
+      trial: { urgent: ["Ton essai gratuit se termine bientôt", "Ton essai gratuit se termine le " + endTxt + ". Abonne-toi pour continuer à utiliser ZFNAFA."],
+        last: ["Dernier jour d'essai gratuit", "Ton essai gratuit se termine aujourd'hui. Abonne-toi pour ne pas être bloqué demain. Tes données restent gardées."] }
+    };
+    var t = T[ei.kind] && T[ei.kind][ei.level]; if (!t) return;
+    addMsg({ id: "sys-" + ei.kind + "-" + key + "-" + ei.level, at: todayStr(), from: "app", title: t[0], text: t[1], act: "sub" });
+  }
+  function fetchFeed() {
+    if (typeof fetch === "undefined" || !/^https?:$/.test(location.protocol)) return;
+    lastFetch = Date.now();
+    try {
+      fetch(FEED_URL + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (!j || !Array.isArray(j.messages)) return;
+        var me = String(lic.id).toUpperCase(), since = profile && profile.at ? String(profile.at).slice(0, 10) : "", added = 0;
+        j.messages.forEach(function (m) {
+          if (!m || typeof m.id !== "string" || typeof m.text !== "string" || !m.text) return;
+          var to = m.to, everyone = to === "all" || to == null;
+          var mine = everyone || (typeof to === "string" && to.toUpperCase() === me) || (Array.isArray(to) && to.some(function (x) { return String(x).toUpperCase() === me; }));
+          if (!mine) return;
+          var at = /^\d{4}-\d{2}-\d{2}$/.test(m.at || "") ? m.at : todayStr();
+          if (everyone && since && at < since) return;
+          if (addMsg({ id: "zf-" + m.id.slice(0, 40), at: at, from: "zf", title: String(m.title || "Message de ZFNAFA").slice(0, 80), text: m.text.slice(0, 800), act: m.act === "sub" ? "sub" : "" })) added++;
+        });
+        if (added) toast("Nouveau message de ZF");
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  function messagesSheet() {
+    var list = msgs.map(function (m, i) { return { m: m, i: i }; }).sort(function (a, b) { return a.m.at < b.m.at ? 1 : a.m.at > b.m.at ? -1 : b.i - a.i; });
+    var h = '<div class="list">';
+    if (!list.length) h += '<div class="empty">Aucun message pour l\'instant. ZFNAFA t\'écrit ici pour te prévenir, par exemple quand ton abonnement va se terminer.</div>';
+    list.forEach(function (x) {
+      var m = x.m;
+      h += '<div class="msg' + (m.read ? "" : " new") + '"><span class="from">' + (m.from === "zf" ? "Message de ZFNAFA" : "ZFNAFA") + '</span><div class="mt"><b>' + esc(m.title) + '</b><span class="md">' + esc(fmtDate(m.at)) + "</span></div><p>" + esc(m.text) + "</p>" +
+        (m.act === "sub" ? '<button class="btn small" data-act="sub">' + (endInfo() && endInfo().kind === "active" ? "Voir mon abonnement" : "Voir l'abonnement") + "</button>" : "") + "</div>";
+    });
+    h += "</div>" + '<a class="btn wa" href="' + ownerLink("Bonjour, j'ai une question sur mon abonnement ZFNAFA. Mon identifiant : " + lic.id) + '" target="_blank" rel="noopener">Écrire à ZFNAFA sur WhatsApp</a>';
+    openSheet("Messages", h);
+    msgs.forEach(function (m) { m.read = true; }); saveMsgs(); updateDot();
+  }
+
+  /* ---------- Chronomètre et alertes ---------- */
+  var WARN_KEY = "zfcahier.warned";
+  function appVisible() { return view !== "intro" && !!profile && profile.notified !== false && !pinLocked; }
+  function stateKey() { var ei = endInfo(); return ei ? ei.kind + ":" + ei.level : "locked"; }
+  var lastKey = stateKey();
+  function maybeWarn() {
+    if (!appVisible() || document.getElementById("overlay").innerHTML !== "") return;
+    var ei = endInfo(); if (!ei || !ei.level) return;
+    var tag = todayStr() + ":" + ei.kind + ":" + ei.level, seen = "";
+    try { seen = localStorage.getItem(WARN_KEY) || ""; } catch (e) {}
+    if (seen === tag) return;
+    try { localStorage.setItem(WARN_KEY, tag); } catch (e) {}
+    var trial = ei.kind === "trial";
+    openSheet(trial ? "Ton essai gratuit se termine" : "Ton abonnement se termine",
+      '<div class="cdbox ' + ei.level + '"><div class="ttl">Temps restant</div>' + cdGrid(ei.ms) + "</div>" +
+      '<p style="margin:0">' + (ei.level === "last" ? "C'est le dernier jour. " : "Il reste <b data-cdtext>" + remainText(ei.ms) + "</b>. ") + (trial ? "Abonne-toi pour continuer à noter tes ventes, tes dettes et ton stock." : "Renouvelle maintenant pour ne pas être bloqué.") + "</p>" +
+      '<div class="actions"><button class="btn" data-act="sub">' + (trial ? "Voir l'abonnement" : "Renouveler maintenant") + '</button><button class="btn alt" data-act="close">Plus tard</button></div>');
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  }
+  function tick() {
+    var key = stateKey();
+    if (key !== lastKey) {
+      lastKey = key;
+      if (key === "locked") closeSheet();
+      syncAutoMessages();
+      if (appVisible()) { render(); maybeWarn(); }
+    }
+    var ei = endInfo(); if (!ei) return;
+    var p = parts(ei.ms), i, els;
+    els = document.querySelectorAll("[data-u]");
+    for (i = 0; i < els.length; i++) { var u = els[i].getAttribute("data-u"); els[i].textContent = u === "d" ? p.d : two(p[u]); }
+    els = document.querySelectorAll("[data-cdtext]");
+    for (i = 0; i < els.length; i++) els[i].textContent = remainText(ei.ms);
+    els = document.querySelectorAll(".cdbox");
+    for (i = 0; i < els.length; i++) els[i].className = "cdbox " + ei.level;
+    var bar = document.querySelector("[data-bar] i"), pc = barPct(ei.ms);
+    if (bar && pc >= 0) bar.style.width = pc.toFixed(2) + "%";
+  }
+
+  /* ---------- Dates de paiement ---------- */
+  function plusDaysStr(n) { var d = new Date(); d.setDate(d.getDate() + n); var p = function (x) { return (x < 10 ? "0" : "") + x; }; return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()); }
+  function dueDays(c) { if (!c || !c.due || !/^\d{4}-\d{2}-\d{2}$/.test(c.due) || debtOf(c.id) <= 0) return null; return Math.round((startOfDay(c.due) - startOfDay(todayStr())) / 864e5); }
+  function dueLabel(c) {
+    var d = dueDays(c); if (d === null) return "";
+    if (d < 0) return " · en retard de " + (-d) + " j";
+    if (d === 0) return " · à payer aujourd'hui";
+    return " · avant le " + startOfDay(c.due).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  }
+  function lateCount() { return state.clients.filter(function (c) { var l = dueDays(c); return l !== null && l <= 0; }).length; }
+  function copyText(tx, msg) { try { navigator.clipboard.writeText(tx).then(function () { toast(msg); }, function () { toast("Copie impossible, appuie longtemps sur le texte."); }); } catch (e) { toast("Copie impossible, appuie longtemps sur le texte."); } }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- Reçus WhatsApp ---------- */
+  function shopName() { return (state.settings && state.settings.shop) || (profile && profile.shop) || "ZFNAFA"; }
+  function receiptText(t) {
+    var c = t.clientId ? client(t.clientId) : null, rest = t.type === "sale" ? t.total - t.paid : 0;
+    var L = ["Reçu · " + shopName(), new Date(t.at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })];
+    if (c) L.push("Client : " + c.name);
+    if (t.type === "sale") {
+      L.push("Achat : " + fmt(t.total), "Payé : " + fmt(t.paid) + " (" + t.mode + ")");
+      L.push(rest > 0 ? "Reste à payer : " + fmt(rest) : "Tout est payé. Merci !");
+    } else {
+      L.push("Paiement reçu : " + fmt(t.paid) + " (" + t.mode + ")");
+      if (c) { var d = Math.max(0, debtOf(c.id)); L.push(d > 0 ? "Solde restant : " + fmt(d) : "Ton compte est à jour. Merci !"); }
+    }
+    return L.join("\n");
+  }
+  function receiptHref(t) {
+    var c = t.clientId ? client(t.clientId) : null, d = c ? (c.phone || "").replace(/\D/g, "") : "";
+    if (d.length === 8) d = "226" + d;
+    return "https://wa.me/" + d + "?text=" + encodeURIComponent(receiptText(t));
+  }
+  function txActs(t) {
+    return '<div class="mini-acts"><a class="undo" href="' + receiptHref(t) + '" target="_blank" rel="noopener">Envoyer le reçu</a>' +
+      '<button class="undo" data-act="askdel" data-kind="tx" data-id="' + t.id + '">Annuler cette opération</button></div>';
+  }
+
+  /* ---------- Bilan ---------- */
+  function rStart(r) { var d = new Date(); d.setHours(0, 0, 0, 0); if (r === "7") d.setDate(d.getDate() - 6); else if (r === "30") d.setDate(d.getDate() - 29); return d; }
+  function rLabel(r) { return r === "7" ? "7 derniers jours" : r === "30" ? "30 derniers jours" : "Aujourd'hui"; }
+  function kfmt(v) { return v >= 1e6 ? (v / 1e6).toFixed(1).replace(".0", "") + " M" : v >= 1000 ? Math.round(v / 1000) + " k" : String(v); }
+  function reportData(r) {
+    var st = rStart(r), tx = state.tx.filter(function (t) { return new Date(t.at) >= st; });
+    var o = { n: 0, ventes: 0, encaisse: 0, credit: 0, remb: 0, chg: 0, lost: 0, nlost: 0, prods: {}, dettes: totalDebt(), chgDue: totalChg() };
+    tx.forEach(function (t) {
+      o.encaisse += t.paid;
+      if (t.type === "sale") { o.n++; o.ventes += t.total; o.credit += t.total - t.paid; o.chg += t.chg || 0; if (t.productId) o.prods[t.productId] = (o.prods[t.productId] || 0) + t.pqty; }
+      else o.remb += t.paid;
+    });
+    (state.lost || []).forEach(function (l) { if (new Date(l.at) >= st) { o.lost += l.amount; o.nlost++; } });
+    return o;
+  }
+  function weekBars() {
+    var days = [], max = 1, i;
+    for (i = 6; i >= 0; i--) {
+      var d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - i);
+      var e = new Date(d.getTime()); e.setDate(e.getDate() + 1);
+      var v = 0; state.tx.forEach(function (t) { var x = new Date(t.at); if (t.type === "sale" && x >= d && x < e) v += t.total; });
+      days.push({ l: d.toLocaleDateString("fr-FR", { weekday: "short" }), v: v }); if (v > max) max = v;
+    }
+    return days.map(function (b) { return '<div class="bcol"><b class="num">' + (b.v ? kfmt(b.v) : "") + '</b><i style="height:' + Math.max(3, Math.round(b.v / max * 80)) + 'px"></i><span>' + esc(b.l) + "</span></div>"; }).join("");
+  }
+  function reportText(r) {
+    var o = reportData(r);
+    return ["Bilan · " + shopName(), rLabel(r) + " (" + new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) + ")",
+      "Ventes : " + fmt(o.ventes) + " (" + o.n + " vente" + (o.n > 1 ? "s" : "") + ")", "Encaissé : " + fmt(o.encaisse), "Crédit accordé : " + fmt(o.credit), "Dettes à récupérer : " + fmt(o.dettes), "Monnaie restante notée : " + fmt(o.chg), "Monnaie à rendre aux clients (total) : " + fmt(o.chgDue)].concat(o.nlost ? ["Ventes annulées ou remboursées : " + fmt(o.lost) + " (" + o.nlost + ")"] : []).join("\n");
+  }
+  var lastReport = "";
+  function reportSheet(r) {
+    r = r === "7" || r === "30" ? r : "today";
+    var o = reportData(r); lastReport = reportText(r);
+    var seg = ["today", "7", "30"].map(function (k) { return '<button class="btn small' + (k === r ? "" : " alt") + '" data-act="rep" data-r="' + k + '">' + (k === "today" ? "Aujourd'hui" : k + " jours") + "</button>"; }).join("");
+    var debtors = state.clients.map(function (c) { return { c: c, d: debtOf(c.id) }; }).filter(function (x) { return x.d > 0; }).sort(function (a, b) { return b.d - a.d; }).slice(0, 3);
+    var prods = Object.keys(o.prods).map(function (id) { return { p: product(id), q: o.prods[id] }; }).filter(function (x) { return x.p && x.q > 0; }).sort(function (a, b) { return b.q - a.q; }).slice(0, 3);
+    var h = '<div class="actions" style="display:grid;grid-template-columns:repeat(3,1fr)">' + seg + "</div>" +
+      '<div class="pair"><div class="stat"><div class="lbl">Ventes</div><div class="val num">' + fmt(o.ventes) + '</div><div class="sub">' + o.n + " vente" + (o.n > 1 ? "s" : "") + '</div></div>' +
+      '<div class="stat"><div class="lbl">Encaissé</div><div class="val num">' + fmt(o.encaisse) + '</div><div class="sub">dont ' + fmt(o.remb) + " remboursés</div></div></div>" +
+      '<div class="pair"><div class="stat ' + (o.credit > 0 ? "debt" : "") + '"><div class="lbl">Crédit accordé</div><div class="val num">' + fmt(o.credit) + '</div></div>' +
+      '<div class="stat debt"><div class="lbl">Dettes à récupérer</div><div class="val num">' + fmt(o.dettes) + '</div><div class="sub">au total</div></div></div>' +
+      '<div class="pair"><div class="stat"><div class="lbl">Monnaie restante</div><div class="val num">' + fmt(o.chg) + '</div><div class="sub">notée sur la période</div></div>' +
+      '<div class="stat ' + (o.chgDue > 0 ? "debt" : "") + '"><div class="lbl">Monnaie à rendre</div><div class="val num">' + fmt(o.chgDue) + '</div><div class="sub">au total, aux clients</div></div></div>' +
+      (o.nlost ? '<div class="stat debt"><div class="lbl">Annulées ou remboursées</div><div class="val num">' + fmt(o.lost) + '</div><div class="sub">' + o.nlost + " commande" + (o.nlost > 1 ? "s" : "") + " (pertes)</div></div>" : "") +
+      '<h3 style="font-size:1rem">Ventes des 7 derniers jours</h3><div class="bars" role="img" aria-label="Ventes par jour">' + weekBars() + "</div>";
+    if (debtors.length) h += '<h3 style="font-size:1rem">Plus grosses dettes</h3><div class="list">' + debtors.map(function (x) { return '<div class="row"><div class="main"><div class="name">' + esc(x.c.name) + '</div></div><span class="amt num neg">' + fmt(x.d) + "</span></div>"; }).join("") + "</div>";
+    if (prods.length) h += '<h3 style="font-size:1rem">Produits les plus vendus</h3><div class="list">' + prods.map(function (x) { return '<div class="row"><div class="main"><div class="name">' + esc(x.p.name) + '</div></div><span class="qty num">' + x.q + " " + esc(x.p.unit) + "</span></div>"; }).join("") + "</div>";
+    h += '<div class="actions"><a class="btn wa" href="https://wa.me/?text=' + encodeURIComponent(lastReport) + '" target="_blank" rel="noopener">Envoyer sur WhatsApp</a><button class="btn alt" data-act="copyreport">Copier le bilan</button></div>';
+    openSheet("Mon bilan", h);
+  }
+
+  /* ---------- Voix : dicter une vente ---------- */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var MIC = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px;margin-right:6px"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z" style="fill:currentColor"/></svg>';
+  /* VOICE-START */
+  var FRN = { zero: 0, un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10, onze: 11, douze: 12, treize: 13, quatorze: 14, quinze: 15, seize: 16, vingt: 20, vingts: 20, trente: 30, quarante: 40, cinquante: 50, soixante: 60, cent: 100, cents: 100, mille: 1000, million: 1e6, millions: 1e6 };
+  var STOPW = {}; "credit crédit francs franc fcfa cfa paye payé payee payée avance verse versé donne donné orange moov especes espèces espece tout rien en par avec de du des la le les un une et vente cash comptant argent money sac sacs riz huile sucre savon lait pates pâtes ce cette ma mon".split(" ").forEach(function (w) { STOPW[w] = 1; });
+  function norm(s) { return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, " "); }
+  function isNW(w) { return Object.prototype.hasOwnProperty.call(FRN, w); }
+  function runToNum(w) {
+    var total = 0, cur = 0;
+    w.forEach(function (x, i) {
+      if (x === "cent" || x === "cents") cur = (cur || 1) * 100;
+      else if (x === "mille") { total += (cur || 1) * 1000; cur = 0; }
+      else if (x === "million" || x === "millions") { total += (cur || 1) * 1e6; cur = 0; }
+      else if ((x === "vingt" || x === "vingts") && w[i - 1] === "quatre") cur += 76;
+      else cur += FRN[x];
+    });
+    return total + cur;
+  }
+  function frWordsToDigits(t) {
+    var tk = t.replace(/-/g, " ").split(/\s+/), out = [], i = 0;
+    while (i < tk.length) {
+      if (!isNW(tk[i])) { out.push(tk[i]); i++; continue; }
+      var run = [], j = i;
+      while (j < tk.length && (isNW(tk[j]) || (tk[j] === "et" && run.length && j + 1 < tk.length && isNW(tk[j + 1])))) { if (tk[j] !== "et") run.push(tk[j]); j++; }
+      var big = run.some(function (w) { return /^(cent|cents|mille|million|millions)$/.test(w); });
+      if (big) out.push(String(runToNum(run))); else out.push.apply(out, tk.slice(i, j));
+      i = j;
+    }
+    return out.join(" ");
+  }
+  function parseSale(raw) {
+    var t = frWordsToDigits(norm(raw));
+    t = t.replace(/\b(\d{1,3})(?:[\s.  ]\d{3})+\b/g, function (m) { return m.replace(/[^\d]/g, ""); });
+    var paid = null, pm;
+    if (/(a credit|credit|dette|rien paye|pas paye|a rembourser)/.test(t)) paid = 0;
+    pm = /(?:paye|payee|avance|verse|donne|recu)\s*(?:de\s*)?(\d+)/.exec(t);
+    if (pm) { paid = +pm[1]; t = t.replace(pm[0], " "); }
+    var nums = (t.match(/\d+/g) || []).map(Number).filter(function (n) { return n >= 25; });
+    var total = nums.length ? nums[0] : 0;
+    if (!total && pm) { total = paid; paid = null; }
+    if (total && paid !== null && paid >= total) paid = null;
+    var mode = /orange/.test(t) ? "Orange Money" : /moov/.test(t) ? "Moov Money" : "";
+    var best = null, bl = 0;
+    state.clients.forEach(function (c) {
+      var full = norm(c.name).trim(), first = full.split(" ")[0];
+      [full, first].forEach(function (nm) {
+        if (nm.length >= 3 && nm.length > bl && (" " + t + " ").indexOf(" " + nm + " ") > -1) { best = c; bl = nm.length; }
+      });
+    });
+    var newName = "";
+    if (!best) {
+      var low = String(raw).toLowerCase().replace(/[’']/g, " ");
+      var m2 = /(?:^|\s)(?:à|a|pour|chez|client|cliente)\s+([a-zàâäçéèêëîïôöùûüÿœ-]{3,})(?:\s+([a-zàâäçéèêëîïôöùûüÿœ-]{3,}))?/.exec(low);
+      if (m2 && !STOPW[m2[1]] && !STOPW[norm(m2[1])]) {
+        var parts = [m2[1]]; if (m2[2] && !STOPW[m2[2]] && !STOPW[norm(m2[2])]) parts.push(m2[2]);
+        newName = parts.map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
+      }
+    }
+    return { total: total, paid: paid, mode: mode, client: best, newName: newName };
+  }
+  /* VOICE-END */
+  var voiceRec = null;
+  function voiceBox() {
+    if (!SR) return "";
+    return '<div class="voice"><button class="btn alt" type="button" data-act="voice" id="voice-btn">' + MIC + 'Dicter la vente</button>' +
+      '<div class="hint" id="voice-out">Dis par exemple : « 5000 francs à Awa, payé 2000 ». Il faut internet.</div></div>';
+  }
+  function applyVoice(text) {
+    var out = document.getElementById("voice-out"); if (!out || !document.getElementById("s-total")) return;
+    var r = parseSale(text);
+    if (!r.total) { out.textContent = "J'ai entendu : « " + text + " ». Je n'ai pas trouvé le montant. Réessaie en disant le montant."; return; }
+    document.getElementById("s-total").value = r.total;
+    document.getElementById("s-paid").value = r.paid === null ? "" : r.paid;
+    var sel = document.getElementById("s-client");
+    if (r.client) { sel.value = r.client.id; document.getElementById("s-new").hidden = true; }
+    else if (r.newName) { sel.value = "__new"; document.getElementById("s-new").hidden = false; document.getElementById("s-newname").value = r.newName; }
+    else { sel.value = ""; document.getElementById("s-new").hidden = true; }
+    var mi = MODES.indexOf(r.mode), rd = document.getElementById("s-mode" + (mi > -1 ? mi : 0)); if (rd) rd.checked = true;
+    updateRest();
+    var paidNow = r.paid === null ? r.total : r.paid;
+    out.textContent = "J'ai compris : " + fmt(r.total) + " · " + (r.client ? r.client.name : r.newName ? r.newName + " (nouveau client)" : "client de passage") + " · payé " + fmt(paidNow) + (paidNow < r.total ? " · reste " + fmt(r.total - paidNow) : "") + ". Vérifie, puis touche Enregistrer la vente.";
+  }
+  function startVoice() {
+    var btn = document.getElementById("voice-btn"), out = document.getElementById("voice-out"); if (!SR || !btn || !out) return;
+    if (voiceRec) { try { voiceRec.stop(); } catch (e) {} return; }
+    var rec = new SR(); rec.lang = "fr-FR"; rec.interimResults = false; rec.maxAlternatives = 1; rec.continuous = false;
+    voiceRec = rec; btn.classList.add("rec"); out.textContent = "Je t'écoute… parle maintenant.";
+    rec.onresult = function (e) { try { applyVoice(e.results[0][0].transcript); } catch (er) { out.textContent = "La dictée n'a pas marché. Écris le montant à la main."; } };
+    rec.onerror = function (e) {
+      var m = { "not-allowed": "Autorise le micro dans Chrome pour utiliser la dictée.", "service-not-allowed": "Autorise le micro dans Chrome pour utiliser la dictée.", "no-speech": "Je n'ai rien entendu. Réessaie.", "network": "La dictée a besoin d'internet.", "audio-capture": "Je ne trouve pas le micro." }[e.error];
+      var o2 = document.getElementById("voice-out"); if (o2) o2.textContent = m || "La dictée n'a pas marché. Écris le montant à la main.";
+    };
+    rec.onend = function () { voiceRec = null; var b2 = document.getElementById("voice-btn"); if (b2) b2.classList.remove("rec"); };
+    try { rec.start(); } catch (e) { voiceRec = null; btn.classList.remove("rec"); out.textContent = "Impossible de lancer la dictée."; }
+  }
+
+  /* ---------- Code secret ---------- */
+  var PIN_KEY = "zfcahier.pin";
+  function loadPin() { try { var r = JSON.parse(localStorage.getItem(PIN_KEY)); if (r && r.salt && r.hash) return r; } catch (e) {} return null; }
+  var pinData = loadPin(), pinLocked = !!pinData, pinBuf = "", pinMsg = "", hiddenAt = 0;
+  function sha(str) {
+    if (window.crypto && crypto.subtle && window.TextEncoder) return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)).then(function (b) { return Array.prototype.map.call(new Uint8Array(b), function (x) { return ("0" + x.toString(16)).slice(-2); }).join(""); });
+    var h = 5381; for (var i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+    return Promise.resolve("d" + h);
+  }
+  function pinScreen() {
+    var dots = "", i; for (i = 0; i < 4; i++) dots += '<i class="' + (i < pinBuf.length ? "on" : "") + '"></i>';
+    var keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"].map(function (k) {
+      return k === "" ? '<span class="key ph"></span>' : '<button class="key" data-act="pinkey" data-k="' + k + '" aria-label="' + (k === "del" ? "Effacer" : k) + '">' + (k === "del" ? "⌫" : k) + "</button>";
+    }).join("");
+    return '<div class="landing" style="align-items:center;text-align:center;padding-top:24px"><div class="brand">' + logo(36) + 'ZFNAFA</div><h1 style="font-size:1.7rem">Entre ton code secret</h1>' +
+      '<div class="dots" role="status" aria-label="' + pinBuf.length + ' chiffres sur 4">' + dots + '</div><div class="err" role="alert">' + esc(pinMsg) + '</div><div class="keypad">' + keys + '</div>' +
+      '<button class="about" data-act="pinforgot">J\'ai oublié mon code</button></div>';
+  }
+  function pinKey(k) {
+    if (!pinData || !pinLocked) return;
+    if (k === "del") pinBuf = pinBuf.slice(0, -1); else if (pinBuf.length < 4) pinBuf += k;
+    pinMsg = "";
+    if (pinBuf.length < 4) { render(); return; }
+    var attempt = pinBuf; render();
+    sha(pinData.salt + attempt).then(function (h) {
+      if (h === pinData.hash) { pinLocked = false; pinBuf = ""; render(); maybeWarn(); }
+      else { pinBuf = ""; pinMsg = "Code incorrect. Réessaie."; render(); }
+    });
+  }
+  function checkPin(cur) { return pinData ? sha(pinData.salt + String(cur || "")).then(function (h) { return h === pinData.hash; }) : Promise.resolve(false); }
+  function pinField(id, label) { return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 chiffres"></div>'; }
+  function pinSheet() {
+    if (!pinData) openSheet("Code secret", '<p class="hint" style="margin:0">Le code protège tes ventes et tes dettes si quelqu\'un prend ton téléphone. Il est demandé à l\'ouverture, et quand tu reviens après une minute.</p>' + pinField("pn1", "Choisis un code à 4 chiffres") + pinField("pn2", "Écris-le encore une fois") + '<div class="err" id="pn-err" role="alert"></div><button class="btn" data-act="pinset">Activer le code</button>');
+    else openSheet("Code secret", '<div class="rest zero">Le code secret est activé.</div>' + pinField("pc", "Ton code actuel") + pinField("pn1", "Nouveau code (pour le changer)") + pinField("pn2", "Nouveau code, encore une fois") + '<div class="err" id="pn-err" role="alert"></div><div class="actions"><button class="btn" data-act="pinchange">Changer le code</button><button class="btn alt" data-act="pinremove">Supprimer le code</button></div>');
+  }
+  function newPinValid() {
+    var a = val("pn1"), b = val("pn2"), e = document.getElementById("pn-err");
+    if (!/^\d{4}$/.test(a)) { e.textContent = "Le code doit avoir 4 chiffres."; return null; }
+    if (a !== b) { e.textContent = "Les deux codes sont différents."; return null; }
+    return a;
+  }
+  function storePin(pin) { var salt = Math.random().toString(36).slice(2, 10); return sha(salt + pin).then(function (h) { pinData = { salt: salt, hash: h }; lsSet(PIN_KEY, JSON.stringify(pinData)); }); }
+  function pinSet() { var p = newPinValid(); if (!p) return; storePin(p).then(function () { closeSheet(); toast("Code secret activé"); }); }
+  function pinChange() {
+    var e = document.getElementById("pn-err");
+    checkPin(val("pc")).then(function (ok) { if (!ok) { e.textContent = "Ton code actuel n'est pas bon."; return; } var p = newPinValid(); if (!p) return; storePin(p).then(function () { closeSheet(); toast("Code changé"); }); });
+  }
+  function pinRemove() {
+    var e = document.getElementById("pn-err");
+    checkPin(val("pc")).then(function (ok) { if (!ok) { e.textContent = "Ton code actuel n'est pas bon."; return; } try { localStorage.removeItem(PIN_KEY); } catch (er) {} pinData = null; closeSheet(); toast("Code secret supprimé"); });
+  }
+  function pinForgot() {
+    openSheet("Code oublié", '<p style="margin:0">Écris le numéro WhatsApp de ton compte pour retirer le code secret. Tes données ne sont pas effacées.</p>' +
+      '<div class="field"><label for="pf-phone">Mon numéro WhatsApp</label><input id="pf-phone" inputmode="tel" autocomplete="tel"></div><div class="err" id="pf-err" role="alert"></div><button class="btn" data-act="pinreset">Retirer le code</button>');
+  }
+  function pinReset() {
+    var e = document.getElementById("pf-err"), d = val("pf-phone").replace(/\D/g, ""), real = String(profile && profile.phone || "").replace(/\D/g, "");
+    if (d.length >= 8 && real && d.slice(-8) === real.slice(-8)) { try { localStorage.removeItem(PIN_KEY); } catch (er) {} pinData = null; pinLocked = false; pinBuf = ""; closeSheet(); render(); toast("Code secret retiré"); }
+    else e.textContent = "Ce numéro n'est pas celui de ton compte.";
+  }
+
+  /* ---------- Installer l'application, hors ligne, fichiers ---------- */
+  var deferredInstall = null;
+  function isStandalone() { return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; }
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferredInstall = e; if (appVisible() && view === "today" && document.getElementById("overlay").innerHTML === "") render(); });
+  window.addEventListener("appinstalled", function () { deferredInstall = null; toast("ZFNAFA est installé"); });
+  function doInstall() {
+    if (!deferredInstall) { toast("Ouvre le menu de Chrome, puis touche « Installer l'application »."); return; }
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(function () { deferredInstall = null; render(); }, function () {});
+  }
+  function setNet() { document.body.classList.toggle("is-off", !navigator.onLine); }
+  function backupDue() {
+    if (state.demo || state.tx.length < 5) return false;
+    var last = lsGet("zfcahier.lastbackup");
+    if (!last) { var since = profile && profile.at ? new Date(profile.at) : null; return !!since && Date.now() - since > 3 * 864e5; }
+    return startOfDay(todayStr()) - startOfDay(last) > 7 * 864e5;
+  }
+  function markBackup() { lsSet("zfcahier.lastbackup", todayStr()); }
+  function extraBanners() {
+    var h = "";
+    if (deferredInstall && !isStandalone() && !lsGet("zfcahier.noinstall")) h += '<div class="demo"><span>Installe ZFNAFA sur ton téléphone. Il marche aussi sans internet.</span><span class="idrow"><button data-act="install">Installer</button><button class="x" data-act="noinstall" aria-label="Plus tard">✕</button></span></div>';
+    var cd = closedDayToSave();
+    if (cd) h += '<button class="trialbar" data-act="dlday" data-k="' + cd.k + '">La journée du ' + esc(dMid(cd.k)) + ' est archivée. Touche ici pour télécharger son fichier.</button>';
+    if (backupDue()) h += '<button class="trialbar" data-act="backup">Fais une sauvegarde de tes données (une fois par semaine). Touche ici.</button>';
+    return h;
+  }
+  function downloadFile(name, text, mime) {
+    try {
+      var b = new Blob([text], { type: mime }), a = document.createElement("a");
+      a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500); return true;
+    } catch (e) { return false; }
+  }
+  function csvCell(v) { v = String(v == null ? "" : v); return /[";\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function csvLine(a) { return a.map(csvCell).join(";"); }
+  function opsCsv() {
+    var rows = [csvLine(["Date", "Type", "Client", "Montant", "Payé", "Reste", "Mode", "Produit", "Quantité", "Note"])];
+    state.tx.slice().sort(function (a, b) { return new Date(a.at) - new Date(b.at); }).forEach(function (t) {
+      var c = t.clientId ? client(t.clientId) : null, p = t.productId ? product(t.productId) : null;
+      rows.push(csvLine([new Date(t.at).toLocaleDateString("fr-FR"), t.type === "sale" ? "Vente" : "Paiement reçu", c ? c.name : "Client de passage", t.type === "sale" ? t.total : 0, t.paid, t.type === "sale" ? t.total - t.paid : 0, t.mode, p ? p.name : "", p ? t.pqty : "", t.note]));
+    });
+    return "﻿" + rows.join("\r\n");
+  }
+  function debtsCsv() {
+    var rows = [csvLine(["Client", "Téléphone", "Dette", "À payer avant le"])];
+    state.clients.map(function (c) { return { c: c, d: debtOf(c.id) }; }).filter(function (x) { return x.d > 0; }).sort(function (a, b) { return b.d - a.d; }).forEach(function (x) { rows.push(csvLine([x.c.name, x.c.phone, x.d, x.c.due ? startOfDay(x.c.due).toLocaleDateString("fr-FR") : ""])); });
+    return "﻿" + rows.join("\r\n");
+  }
+
+  /* ---------- Archives par journée ---------- */
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function dkey(iso) { var d = new Date(iso); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+  function dLong(k) { return startOfDay(k).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }); }
+  function dMid(k) { return startOfDay(k).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }); }
+  function hhmm(iso) { return new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); }
+  function byAt(a, b) { return new Date(a.at) - new Date(b.at); }
+  function dayLots() {
+    var map = {};
+    function g(k) { return map[k] || (map[k] = { k: k, sales: [], pays: [], moves: [] }); }
+    state.tx.forEach(function (t) { var o = g(dkey(t.at)); (t.type === "sale" ? o.sales : o.pays).push(t); });
+    state.moves.forEach(function (m) { g(dkey(m.at)).moves.push(m); });
+    if (isBiz()) B().expenses.forEach(function (e) { g(dkey(e.at)); });
+    return Object.keys(map).sort().reverse().map(function (k) { var o = map[k]; o.sales.sort(byAt); o.pays.sort(byAt); o.moves.sort(byAt); return o; });
+  }
+  function lotFor(k) { return dayLots().filter(function (o) { return o.k === k; })[0] || { k: k, sales: [], pays: [], moves: [] }; }
+  function lotStats(o) {
+    var s = { n: o.sales.length, ventes: 0, credit: 0, remb: 0, encaisse: 0, chg: 0 };
+    o.sales.forEach(function (t) { s.ventes += t.total; s.credit += t.total - t.paid; s.encaisse += t.paid; s.chg += t.chg || 0; });
+    o.pays.forEach(function (t) { s.remb += t.paid; s.encaisse += t.paid; });
+    return s;
+  }
+  function debtsAt(k) {
+    var end = endOfDay(k).getTime(), by = {}, tot = 0;
+    state.tx.forEach(function (t) { if (!t.clientId || new Date(t.at).getTime() > end) return; by[t.clientId] = (by[t.clientId] || 0) + (t.type === "sale" ? t.total - t.paid : -t.paid); });
+    var list = Object.keys(by).map(function (id) { return { c: client(id), d: by[id] }; }).filter(function (x) { return x.c && x.d > 0; }).sort(function (a, b) { return b.d - a.d; });
+    list.forEach(function (x) { tot += x.d; });
+    return { list: list, total: tot };
+  }
+  function archivesSheet() {
+    var lots = dayLots(), h = "";
+    if (!lots.length) h = '<div class="empty">Aucune journée pour l\'instant. Dès que tu notes une vente, la journée est enregistrée ici toute seule, avec sa date.</div>';
+    else {
+      h += '<p class="hint" style="margin:0">Chaque journée est enregistrée toute seule, avec sa date. Les journées ne se mélangent jamais. Touche une journée pour voir son détail et télécharger son fichier.</p><div class="list">';
+      lots.forEach(function (o) {
+        var st = lotStats(o);
+        h += '<button class="row" data-act="day" data-k="' + o.k + '"><div class="main"><div class="name" style="text-transform:capitalize">' + esc(dLong(o.k)) + (o.k === todayStr() ? '<span class="todaymark">Aujourd\'hui</span>' : "") + '</div><div class="sub">' +
+          st.n + " vente" + (st.n > 1 ? "s" : "") + " · " + fmt(st.ventes) + (st.credit ? " · crédit " + fmt(st.credit) : "") + (o.moves.length ? " · " + o.moves.length + " mouvement" + (o.moves.length > 1 ? "s" : "") + " de stock" : "") + '</div></div><span class="pill ok">Ouvrir</span></button>';
+      });
+      h += '</div><button class="btn alt" data-act="dlall">Télécharger toutes les journées (Excel)</button>';
+    }
+    openSheet("Archives par jour", h);
+  }
+  function daySummary(k) {
+    var o = lotFor(k), st = lotStats(o), d = debtsAt(k);
+    return ["Journée du " + dLong(k) + " · " + shopName(), "Ventes : " + fmt(st.ventes) + " (" + st.n + " vente" + (st.n > 1 ? "s" : "") + ")", "Encaissé : " + fmt(st.encaisse), "Crédit accordé : " + fmt(st.credit), "Paiements de dettes reçus : " + fmt(st.remb), "Monnaie restante notée : " + fmt(st.chg), "Dettes à la fin de la journée : " + fmt(d.total)].join("\n");
+  }
+  function daySheet(k) {
+    var o = lotFor(k), st = lotStats(o), d = debtsAt(k), credits = o.sales.filter(function (t) { return t.total > t.paid; });
+    var sec = function (title, n, rows, empty) { return '<h3 style="font-size:1rem">' + title + (n ? " (" + n + ")" : "") + '</h3><div class="list">' + (rows || '<div class="empty">' + empty + "</div>") + "</div>"; };
+    var h = '<div class="pair"><div class="stat"><div class="lbl">Ventes</div><div class="val num">' + fmt(st.ventes) + '</div><div class="sub">' + st.n + ' vente' + (st.n > 1 ? "s" : "") + '</div></div><div class="stat"><div class="lbl">Encaissé</div><div class="val num">' + fmt(st.encaisse) + '</div></div></div>' +
+      '<div class="pair"><div class="stat ' + (st.credit ? "debt" : "") + '"><div class="lbl">Dettes créées</div><div class="val num">' + fmt(st.credit) + '</div><div class="sub">' + credits.length + ' à crédit</div></div><div class="stat debt"><div class="lbl">Dettes en fin de journée</div><div class="val num">' + fmt(d.total) + '</div><div class="sub">' + d.list.length + ' client' + (d.list.length > 1 ? "s" : "") + '</div></div></div>';
+    if (st.chg > 0) h += '<div class="rest">Monnaie restante notée ce jour-là : ' + fmt(st.chg) + "</div>";
+    h += sec("Ventes", o.sales.length, o.sales.map(txRow).join(""), "Aucune vente ce jour-là.");
+    h += sec("Dettes créées ce jour", credits.length, credits.map(function (t) { var c = t.clientId ? client(t.clientId) : null; return '<div class="row"><div class="main"><div class="name">' + esc(c ? c.name : "Client de passage") + '</div><div class="sub num">Vente ' + fmt(t.total) + " · payé " + fmt(t.paid) + '</div></div><span class="amt num neg">' + fmt(t.total - t.paid) + "</span></div>"; }).join(""), "Aucune dette créée ce jour-là.");
+    h += sec("Paiements de dettes reçus", o.pays.length, o.pays.map(txRow).join(""), "Aucun paiement reçu ce jour-là.");
+    h += sec("Dettes à la fin de la journée", d.list.length, d.list.map(function (x) { return '<div class="row"><div class="main"><div class="name">' + esc(x.c.name) + '</div></div><span class="amt num neg">' + fmt(x.d) + "</span></div>"; }).join(""), "Personne ne devait rien.");
+    if (isBiz()) { var ex = bizExpensesOfDay(k), et = 0; ex.forEach(function (e) { et += e.amount; }); h += sec("Dépenses", ex.length, ex.map(function (e) { return '<div class="row"><div class="main"><div class="name">' + esc(e.label || e.cat) + '</div><div class="sub">' + esc(e.cat) + '</div></div><span class="amt num neg">' + fmt(e.amount) + "</span></div>"; }).join(""), "Aucune dépense ce jour-là."); if (ex.length) h += '<div class="rest">Bénéfice du jour : ' + fmt(st.encaisse - et) + "</div>"; }
+    if (o.moves.length) h += sec("Stock", o.moves.length, o.moves.map(function (m) { return moveRow(m, false); }).join(""), "");
+    h += '<div class="actions"><button class="btn" data-act="dlday" data-k="' + k + '">Télécharger le fichier du jour</button><a class="btn wa" href="https://wa.me/?text=' + encodeURIComponent(daySummary(k)) + '" target="_blank" rel="noopener">Envoyer le résumé sur WhatsApp</a></div>' +
+      '<button class="btn alt" data-act="archives">Toutes les journées</button>';
+    openSheet(dMid(k), h);
+  }
+  function dayLines(k) {
+    var o = lotFor(k), st = lotStats(o), d = debtsAt(k), L = [], nm = function (id) { var c = id ? client(id) : null; return c ? c.name : "Client de passage"; };
+    L.push(csvLine(["JOURNÉE", startOfDay(k).toLocaleDateString("fr-FR"), shopName()])); L.push("");
+    L.push(csvLine(["VENTES"])); L.push(csvLine(["Heure", "Client", "Montant", "Payé", "Reste", "Monnaie restante", "Mode", "Produit", "Quantité", "Note"]));
+    o.sales.forEach(function (t) { var p = t.productId ? product(t.productId) : null; L.push(csvLine([hhmm(t.at), nm(t.clientId), t.total, t.paid, t.total - t.paid, t.chg || 0, t.mode, p ? p.name : "", p ? t.pqty : "", t.note])); });
+    L.push(csvLine(["Total", "", st.ventes, st.ventes - st.credit, st.credit, st.chg])); L.push("");
+    L.push(csvLine(["DETTES CRÉÉES CE JOUR"])); L.push(csvLine(["Client", "Téléphone", "Dette créée"]));
+    o.sales.filter(function (t) { return t.total > t.paid; }).forEach(function (t) { var c = t.clientId ? client(t.clientId) : null; L.push(csvLine([nm(t.clientId), c ? c.phone : "", t.total - t.paid])); });
+    L.push(csvLine(["Total", "", st.credit])); L.push("");
+    L.push(csvLine(["PAIEMENTS DE DETTES REÇUS"])); L.push(csvLine(["Heure", "Client", "Montant", "Mode"]));
+    o.pays.forEach(function (t) { L.push(csvLine([hhmm(t.at), nm(t.clientId), t.paid, t.mode])); });
+    L.push(csvLine(["Total", "", st.remb])); L.push("");
+    L.push(csvLine(["DETTES À LA FIN DE LA JOURNÉE"])); L.push(csvLine(["Client", "Téléphone", "Dette"]));
+    d.list.forEach(function (x) { L.push(csvLine([x.c.name, x.c.phone, x.d])); });
+    L.push(csvLine(["Total", "", d.total])); L.push("");
+    if (isBiz()) { var ex = bizExpensesOfDay(k), et = 0; L.push(csvLine(["DÉPENSES"])); L.push(csvLine(["Catégorie", "Détail", "Montant"])); ex.forEach(function (e) { et += e.amount; L.push(csvLine([e.cat, e.label, e.amount])); }); L.push(csvLine(["Total", "", et])); L.push(csvLine(["BÉNÉFICE DU JOUR (encaissé − dépenses)", "", st.encaisse - et])); L.push(""); }
+    L.push(csvLine(["STOCK"])); L.push(csvLine(["Heure", "Produit", "Mouvement", "Quantité", "Note"]));
+    o.moves.forEach(function (m) { var p = product(m.productId); L.push(csvLine([hhmm(m.at), p ? p.name : "", m.type === "in" ? "Entrée" : "Sortie", m.qty, m.note])); });
+    return L;
+  }
+  function dayCsv(k) { return "﻿" + dayLines(k).join("\r\n"); }
+  function allDaysCsv() { return "﻿" + dayLots().slice().reverse().map(function (o) { return dayLines(o.k).join("\r\n"); }).join("\r\n\r\n=====\r\n\r\n"); }
+  function closedDayToSave() {
+    if (state.demo) return null;
+    var t = todayStr(), lots = dayLots().filter(function (o) { return o.k < t && (o.sales.length || o.pays.length) && !lsGet("zfnafa.dl." + o.k); });
+    if (!lots.length) return null;
+    return (startOfDay(t) - startOfDay(lots[0].k)) / 864e5 <= 7 ? lots[0] : null;
+  }
+
+  /* ---------- Copies automatiques (début de chaque journée) ---------- */
+  var SNAP_IDX = "zfnafa.snaps";
+  function snapKeys() { try { var r = JSON.parse(localStorage.getItem(SNAP_IDX)); return Array.isArray(r) ? r : []; } catch (e) { return []; } }
+  function autoSnap() {
+    if (state.demo || (!state.tx.length && !state.moves.length && !state.clients.length)) return;
+    var t = todayStr(), ks = snapKeys(); if (ks.indexOf(t) > -1) return;
+    var js = JSON.stringify(state); if (js.length > 600000) return;
+    try {
+      localStorage.setItem("zfnafa.snap." + t, js); ks.push(t); ks.sort();
+      while (ks.length > 7) { localStorage.removeItem("zfnafa.snap." + ks.shift()); }
+      localStorage.setItem(SNAP_IDX, JSON.stringify(ks));
+    } catch (e) {}
+  }
+  function snapList() {
+    var ks = snapKeys().slice().reverse();
+    return '<div class="field"><label>Copies automatiques (une par jour, au début de la journée)</label>' + (ks.length
+      ? '<div class="list">' + ks.map(function (k) { return '<div class="row"><div class="main"><div class="name" style="text-transform:capitalize">' + esc(dLong(k)) + '</div></div><button class="btn alt small" data-act="snaprestore" data-k="' + k + '">Restaurer</button></div>'; }).join("") + "</div>"
+      : '<div class="hint">La première copie automatique est faite à ta prochaine ouverture.</div>') + "</div>";
+  }
+  function snapConfirm(k) {
+    openSheet("Restaurer cette copie ?", '<p style="margin:0">Tes données reviendront comme au début du ' + esc(dMid(k)) + '. Ce que tu as noté depuis sera remplacé. Fais d\'abord une sauvegarde si tu veux garder les deux.</p>' +
+      '<div class="actions"><button class="btn" data-act="snapdo" data-k="' + k + '">Oui, restaurer</button><button class="btn alt" data-act="close">Non, garder</button></div>');
+  }
+  function snapRestore(k) {
+    var np = null; try { np = cleanState(JSON.parse(localStorage.getItem("zfnafa.snap." + k))); } catch (e) {}
+    if (!np) { toast("Cette copie est introuvable."); return; }
+    state = np; save(); closeSheet(); render(); toast("Données restaurées");
+  }
+
+  /* ---------- Espace entreprise ---------- */
+  var SHOP_TYPES = ["Boutique", "Marché", "Grossiste", "Boulangerie", "Autre"];
+  var BIZ_TYPES = ["Restaurant", "Quincaillerie", "Garage / Mécanique", "Salon de coiffure", "Autre entreprise"];
+  var SECTORS = {
+    "Restaurant": { work: "Commandes", one: "commande", ref: "Table ou nom du client", kinds: ["Sur place", "Emporter", "Livraison"], steps: ["En préparation", "Servie"] },
+    "Quincaillerie": { work: "Commandes clients", one: "commande", ref: "Client ou chantier", kinds: ["Retrait", "Livraison"], steps: ["À préparer", "Prête"] },
+    "Garage / Mécanique": { work: "Travaux", one: "travail", ref: "Véhicule ou plaque", kinds: ["Réparation", "Entretien", "Pièces"], steps: ["En attente", "En cours", "Terminé"] },
+    "Salon de coiffure": { work: "Rendez-vous", one: "rendez-vous", ref: "Nom du client", kinds: ["Coiffure", "Soins", "Autre"], steps: ["Prévu", "En cours"] },
+    "Autre entreprise": { work: "Commandes", one: "commande", ref: "Client ou référence", kinds: ["Commande"], steps: ["À faire", "En cours"] }
+  };
+  var EXP_CATS = ["Achats (marchandises, matières)", "Loyer", "Salaires", "Électricité, eau, internet", "Transport, carburant", "Réparations, matériel", "Autre"];
+  var bizP = "month";
+  function isBiz() { return !!profile && BIZ_TYPES.indexOf(profile.type) > -1; }
+  function sector() { return SECTORS[profile && profile.type] || SECTORS["Autre entreprise"]; }
+  function typeOptions(sel) {
+    var o = function (t) { return "<option" + (t === sel ? " selected" : "") + ">" + t + "</option>"; };
+    return '<optgroup label="Commerçant">' + SHOP_TYPES.map(o).join("") + '</optgroup><optgroup label="Entreprise">' + BIZ_TYPES.map(o).join("") + "</optgroup>";
+  }
+  function B() { if (!state.biz) state.biz = { expenses: [], staff: [], orders: [] }; return state.biz; }
+  function inP(iso, p) { var a = new Date(iso), b = new Date(); return p === "today" ? sameDay(iso) : (a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth()); }
+  function bizNums(p) {
+    var v = 0, enc = 0, dep = 0;
+    state.tx.forEach(function (t) { if (!inP(t.at, p)) return; if (t.type === "sale") v += t.total; enc += t.paid; });
+    B().expenses.forEach(function (e) { if (inP(e.at, p)) dep += e.amount; });
+    return { v: v, enc: enc, dep: dep, ben: enc - dep };
+  }
+  function bizCard() {
+    var n = bizNums("month"), open = B().orders.filter(function (o) { return !o.done; }).length;
+    return '<button class="bizcard" data-act="biz"><span><span class="lbl">Mon entreprise · ' + esc(profile.type) + '</span><span class="big num">' + fmt(n.ben) + '</span><span class="sub">Bénéfice du mois · ' + open + " " + (open > 1 ? sectorWork().toLowerCase() : sector().one) + " en cours</span></span><span class=\"go\">Ouvrir ›</span></button>";
+  }
+  function sectorWork() { return sector().work; }
+  function bizSheet() {
+    var n = bizNums(bizP), s = sector(), open = B().orders.filter(function (o) { return !o.done; }).length;
+    var tabs = '<div class="actions"><button class="btn small ' + (bizP === "today" ? "" : "alt") + '" data-act="bizp" data-p="today">Aujourd\'hui</button><button class="btn small ' + (bizP === "month" ? "" : "alt") + '" data-act="bizp" data-p="month">Ce mois</button></div>';
+    var h = tabs + '<div class="pair"><div class="stat"><div class="lbl">Ventes</div><div class="val num">' + fmt(n.v) + '</div></div><div class="stat"><div class="lbl">Encaissé</div><div class="val num">' + fmt(n.enc) + '</div></div></div>' +
+      '<div class="pair"><div class="stat debt"><div class="lbl">Dépenses</div><div class="val num">' + fmt(n.dep) + '</div></div><div class="stat"><div class="lbl">Bénéfice</div><div class="val num" style="color:' + (n.ben < 0 ? "var(--debt)" : "var(--accent)") + '">' + fmt(n.ben) + '</div><div class="sub">encaissé − dépenses</div></div></div>' +
+      '<div class="list">' +
+      '<button class="row" data-act="orders"><div class="main"><div class="name">' + esc(s.work) + '</div><div class="sub">' + open + " en cours</div></div><span class=\"pill ok\">Ouvrir</span></button>" +
+      '<button class="row" data-act="expenses"><div class="main"><div class="name">Dépenses</div><div class="sub">Loyer, achats, électricité…</div></div><span class="pill ok">Ouvrir</span></button>' +
+      '<button class="row" data-act="staff"><div class="main"><div class="name">Équipe et salaires</div><div class="sub">' + B().staff.length + " personne" + (B().staff.length > 1 ? "s" : "") + '</div></div><span class="pill ok">Ouvrir</span></button>' +
+      '<button class="row" data-act="stocktab"><div class="main"><div class="name">Stock</div><div class="sub">Marchandises et matières</div></div><span class="pill ok">Ouvrir</span></button>' +
+      '<button class="row" data-act="archives"><div class="main"><div class="name">Archives par jour</div><div class="sub">Une journée = un lot, avec sa date</div></div><span class="pill ok">Ouvrir</span></button></div>' +
+      '<a class="btn wa" href="https://wa.me/?text=' + encodeURIComponent((bizP === "today" ? "Bilan du jour" : "Bilan du mois") + " · " + shopName() + "\nVentes : " + fmt(n.v) + "\nEncaissé : " + fmt(n.enc) + "\nDépenses : " + fmt(n.dep) + "\nBénéfice : " + fmt(n.ben)) + '" target="_blank" rel="noopener">Envoyer le bilan sur WhatsApp</a>';
+    openSheet("Mon entreprise", h);
+  }
+  /* Dépenses */
+  function expensesSheet() {
+    var list = B().expenses.filter(function (e) { return inP(e.at, "month"); }).sort(function (a, b) { return new Date(b.at) - new Date(a.at); }), tot = 0;
+    list.forEach(function (e) { tot += e.amount; });
+    var h = '<div class="stat debt"><div class="lbl">Dépenses du mois</div><div class="val num">' + fmt(tot) + '</div></div><button class="btn" data-act="newexp">+ Nouvelle dépense</button><div class="list">' +
+      (list.length ? list.map(function (e) { return '<div class="row"><div class="main"><div class="name">' + esc(e.label || e.cat) + '</div><div class="sub">' + esc(e.cat) + " · " + dShort(e.at) + '</div><button class="undo" data-act="askdel" data-kind="expense" data-id="' + e.id + '">Supprimer</button></div><span class="amt num neg">' + fmt(e.amount) + "</span></div>"; }).join("") : '<div class="empty">Aucune dépense ce mois-ci.</div>') + '</div><button class="btn alt" data-act="biz">Retour</button>';
+    openSheet("Dépenses", h);
+  }
+  function newExpenseSheet() {
+    openSheet("Nouvelle dépense",
+      '<div class="field"><label for="x-amt">Montant (FCFA)</label><input class="bigin num" id="x-amt" inputmode="numeric" placeholder="0" autocomplete="off"></div>' +
+      '<div class="field"><label for="x-cat">Catégorie</label><select id="x-cat">' + EXP_CATS.map(function (c) { return "<option>" + c + "</option>"; }).join("") + "</select></div>" +
+      '<div class="field"><label for="x-label">Détail (facultatif)</label><input id="x-label" placeholder="Ex : facture SONABEL" autocomplete="off"></div>' +
+      '<div class="field"><label for="x-date">Date</label><input type="date" id="x-date" value="' + todayStr() + '"></div>' +
+      '<div class="err" id="x-err" role="alert"></div><button class="btn" data-act="saveexp">Enregistrer la dépense</button>');
+  }
+  function addExpense(amount, cat, label, dateStr, staffId) {
+    var d = /^\d{4}-\d{2}-\d{2}$/.test(dateStr || "") ? dateStr : todayStr(), now = new Date(), at = startOfDay(d); at.setHours(d === todayStr() ? now.getHours() : 12, d === todayStr() ? now.getMinutes() : 0, 0, 0);
+    B().expenses.push({ id: uid(), at: at.toISOString(), cat: cat, label: label || "", amount: amount, staffId: staffId || null });
+  }
+  function saveExpense() {
+    var a = num(document.getElementById("x-amt").value), err = document.getElementById("x-err");
+    if (a <= 0) { err.textContent = "Entre le montant."; return; }
+    addExpense(a, document.getElementById("x-cat").value, val("x-label"), val("x-date")); save(); expensesSheet(); render(); toast("Dépense enregistrée");
+  }
+  /* Équipe */
+  function staffSheet() {
+    var st = B().staff, tot = 0, mk = function (iso) { var d = new Date(iso); return d.getFullYear() * 12 + d.getMonth(); }, nowK = mk(new Date().toISOString());
+    st.forEach(function (x) { tot += x.salary; });
+    var h = '<div class="stat"><div class="lbl">Salaires par mois</div><div class="val num">' + fmt(tot) + '</div></div><button class="btn" data-act="newstaff">+ Ajouter une personne</button><div class="list">' +
+      (st.length ? st.map(function (x) {
+        var paid = B().expenses.some(function (e) { return e.staffId === x.id && mk(e.at) === nowK; });
+        return '<div class="row"><div class="main"><div class="name">' + esc(x.name) + '</div><div class="sub">' + esc(x.role || "Employé") + " · " + fmt(x.salary) + '</div><button class="undo" data-act="askdel" data-kind="staff" data-id="' + x.id + '">Retirer</button></div>' +
+          (paid ? '<span class="pill ok">Payé ce mois</span>' : '<button class="btn small" data-act="paystaff" data-id="' + x.id + '">Payer</button>') + "</div>";
+      }).join("") : '<div class="empty">Ajoute tes employés. Quand tu touches « Payer », le salaire est noté dans tes dépenses.</div>') + '</div><button class="btn alt" data-act="biz">Retour</button>';
+    openSheet("Équipe et salaires", h);
+  }
+  function newStaffSheet() {
+    openSheet("Ajouter une personne",
+      '<div class="field"><label for="m-name">Nom</label><input id="m-name" autocomplete="off"></div>' +
+      '<div class="field"><label for="m-role">Poste (facultatif)</label><input id="m-role" placeholder="Ex : cuisinier, mécanicien, caissière" autocomplete="off"></div>' +
+      '<div class="field"><label for="m-sal">Salaire par mois (FCFA)</label><input class="num" id="m-sal" inputmode="numeric" placeholder="0" autocomplete="off"></div>' +
+      '<div class="err" id="m-err" role="alert"></div><button class="btn" data-act="savestaff">Ajouter</button>');
+  }
+  function saveStaff() {
+    var nm = val("m-name"); if (!nm) { document.getElementById("m-err").textContent = "Écris le nom."; return; }
+    B().staff.push({ id: uid(), name: nm, role: val("m-role"), salary: num(document.getElementById("m-sal").value) }); save(); staffSheet(); toast("Personne ajoutée");
+  }
+  function payStaff(id) {
+    var x = B().staff.filter(function (s) { return s.id === id; })[0]; if (!x) return;
+    if (x.salary <= 0) { toast("Ajoute d'abord un salaire pour " + x.name); return; }
+    addExpense(x.salary, "Salaires", "Salaire · " + x.name, todayStr(), x.id); save(); staffSheet(); toast("Salaire de " + x.name + " noté");
+  }
+  /* Commandes / travaux */
+  function nextLabel(o) { var s = sector().steps; return o.step + 1 < s.length ? s[o.step + 1] : "Encaisser"; }
+  function ordersSheet() {
+    var s = sector(), open = B().orders.filter(function (o) { return !o.done; }).sort(function (a, b) { return new Date(a.at) - new Date(b.at); }),
+      done = B().orders.filter(function (o) { return o.done && sameDay(o.at); });
+    var h = '<button class="btn" data-act="neworder">+ Nouveau ' + esc(s.one) + '</button><h3 style="font-size:1rem">En cours (' + open.length + ')</h3><div class="list">' +
+      (open.length ? open.map(function (o) {
+        return '<div class="row"><div class="main"><div class="name">' + esc(o.ref) + '</div><div class="sub">' + esc(o.kind) + " · " + esc(s.steps[o.step] || "") + (o.note ? " · " + esc(o.note) : "") + '</div><button class="undo" data-act="askdel" data-kind="order" data-id="' + o.id + '">Supprimer</button></div>' +
+          '<div style="text-align:right"><div class="amt num">' + fmt(o.total) + '</div><button class="btn small" data-act="advance" data-id="' + o.id + '">' + esc(nextLabel(o)) + "</button></div></div>";
+      }).join("") : '<div class="empty">Rien en cours.</div>') + "</div>" +
+      '<h3 style="font-size:1rem">Terminés aujourd\'hui (' + done.length + ')</h3><div class="list">' + (done.length ? done.map(function (o) { return '<div class="row"><div class="main"><div class="name">' + esc(o.ref) + '</div><div class="sub">' + esc(o.kind) + '</div></div><span class="pill ok">' + fmt(o.total) + "</span></div>"; }).join("") : '<div class="empty">Aucun pour l\'instant.</div>') + '</div><button class="btn alt" data-act="biz">Retour</button>';
+    openSheet(s.work, h);
+  }
+  function newOrderSheet() {
+    var s = sector();
+    openSheet("Nouveau " + s.one,
+      '<div class="field"><label for="o-ref">' + esc(s.ref) + '</label><input id="o-ref" autocomplete="off"></div>' +
+      '<div class="field"><label for="o-kind">Type</label><select id="o-kind">' + s.kinds.map(function (k) { return "<option>" + k + "</option>"; }).join("") + "</select></div>" +
+      '<div class="field"><label for="o-total">Montant (FCFA)</label><input class="bigin num" id="o-total" inputmode="numeric" placeholder="0" autocomplete="off"></div>' +
+      '<div class="field"><label for="o-note">Détail (facultatif)</label><input id="o-note" placeholder="Ex : 2 poulets braisés, vidange" autocomplete="off"></div>' +
+      '<div class="err" id="o-err" role="alert"></div><button class="btn" data-act="saveorder">Enregistrer</button>');
+  }
+  function saveOrder() {
+    var ref = val("o-ref"), t = num(document.getElementById("o-total").value), err = document.getElementById("o-err");
+    if (!ref) { err.textContent = "Écris : " + sector().ref.toLowerCase() + "."; return; }
+    if (t <= 0) { err.textContent = "Entre le montant."; return; }
+    B().orders.push({ id: uid(), at: new Date().toISOString(), ref: ref, kind: val("o-kind"), note: val("o-note"), total: t, step: 0, done: false }); save(); ordersSheet(); render(); toast("Enregistré");
+  }
+  function advanceOrder(id) {
+    var o = B().orders.filter(function (x) { return x.id === id; })[0]; if (!o) return;
+    if (o.step + 1 < sector().steps.length) { o.step++; save(); ordersSheet(); return; }
+    var opts = '<option value="">Client de passage</option>' + state.clients.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + "</option>"; }).join("");
+    openSheet("Encaisser",
+      '<div class="stat"><div class="lbl">' + esc(o.ref) + '</div><div class="val num">' + fmt(o.total) + '</div></div>' +
+      '<div class="field"><label for="p-client">Client</label><select id="p-client">' + opts + "</select></div>" +
+      '<div class="field"><label for="p-paid">Montant payé (FCFA)</label><input class="num" id="p-paid" inputmode="numeric" placeholder="Laisser vide si tout est payé" autocomplete="off"><div class="hint">Si le client ne paie pas tout, choisis-le dans la liste : le reste devient une dette.</div></div>' +
+      modeField("p-mode") + '<div class="err" id="p-err" role="alert"></div><button class="btn" data-act="doorder" data-id="' + id + '">Encaisser et terminer</button>');
+  }
+  function doOrder(id) {
+    var o = B().orders.filter(function (x) { return x.id === id; })[0]; if (!o) return;
+    var raw = val("p-paid"), paid = raw === "" ? o.total : num(raw), cid = val("p-client"), err = document.getElementById("p-err");
+    if (paid > o.total) { err.textContent = "Le montant payé ne peut pas dépasser " + fmt(o.total) + "."; return; }
+    if (paid < o.total && !cid) { err.textContent = "Choisis un client pour noter la dette."; return; }
+    var sid = uid();
+    state.tx.push({ id: sid, at: new Date().toISOString(), clientId: cid || null, type: "sale", total: o.total, paid: paid, mode: checkedMode("p-mode"), note: sector().work.slice(0, -1) + " · " + o.ref, productId: null, pqty: 0 });
+    o.done = true; o.saleId = sid; o.at = new Date().toISOString(); save(); ordersSheet(); render(); toast(paid < o.total ? "Encaissé, dette notée" : "Encaissé");
+  }
+  function bizExpensesOfDay(k) { return B().expenses.filter(function (e) { return dkey(e.at) === k; }); }
+
+  /* ---------- Thème (noir / blanc) ---------- */
+  var THEME_KEY = "zfnafa.theme";
+  var theme = (function () { try { return localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark"; } catch (e) { return "dark"; } })();
+  function applyTheme() {
+    document.documentElement.setAttribute("data-theme", theme);
+    var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", theme === "light" ? "#F6F2E9" : "#0A0A0A");
+    var cs = document.querySelector('meta[name="color-scheme"]'); if (cs) cs.setAttribute("content", theme);
+  }
+  function themeName(t) { return t === "light" ? "Blanc" : "Noir"; }
+  function setTheme(t) { theme = t === "light" ? "light" : "dark"; try { localStorage.setItem(THEME_KEY, theme); } catch (e) {} applyTheme(); themeSheet(); }
+  function themeSheet() {
+    var sw = function (t, bg, fg) { return '<span aria-hidden="true" style="width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:' + bg + ';color:' + fg + ';display:grid;place-items:center;font-weight:700;font-family:var(--font-display)">Aa</span>'; };
+    openSheet("Thème", '<div class="list">' +
+      ["dark", "light"].map(function (t) { return '<button class="row" data-act="settheme" data-t="' + t + '">' + (t === "dark" ? sw(t, "#0A0A0A", "#FFC21A") : sw(t, "#FFFFFF", "#8A5300")) + '<div class="main"><div class="name">' + themeName(t) + '</div></div>' + (theme === t ? '<span class="pill ok">✓</span>' : "") + "</button>"; }).join("") + "</div>");
+  }
+
+  /* ---------- Langues (Français, Mooré, Dioula) ---------- */
+  var LANG_KEY = "zfnafa.lang";
+  var I18N = { mo: {"Accueil": "Roogo", "+ Vente": "+ Yaool", "Nom": "Yʋʋre", "Langue": "Gɔmde"},
+    di: {"Accueil": "So", "Clients": "Sanbagaw", "Stock": "Jagofɛnw", "+ Vente": "+ Feere", "Ventes du jour": "Bi ka feereli", "Encaissé": "Sɔrɔta", "On me doit": "Juru min bɛ mɔgɔw kan", "Voir mon bilan": "N ka jate lajɛ", "Archives par jour": "Don o don sɛbɛnw", "Qui me doit": "Jɔn ka juru bɛ n ye ?", "Relancer": "Hakili jigin", "Annuler cette opération": "Nin ban", "Espèces": "Wari", "Client de passage": "Sanbaga dɔ", "Montant de la vente (FCFA)": "Feereli wari hakɛ (FCFA)", "Client": "Sanbaga", "Nom du nouveau client": "Sanbaga kura tɔgɔ", "Téléphone (pour les rappels WhatsApp)": "Telefɔni (WhatsApp hakilijigin kama)", "Montant payé maintenant (FCFA)": "Wari min sara sisan (FCFA)", "Tout payé": "Bɛɛ sara", "Tout à crédit": "Bɛɛ ye juru ye", "Il doit payer avant le (facultatif)": "A ka sara kɛ sani (ni i b'a fɛ)", "Produit vendu (met le stock à jour)": "Fɛn feerelen", "Quantité vendue": "Hakɛ feerelen", "Note (facultatif)": "Kunnafoni (ni i b'a fɛ)", "Enregistrer la vente": "Feereli sɛbɛn", "Solde dû": "Juru tɔ", "Téléphone": "Telefɔni", "Encaisser un paiement": "Sara ta", "Nouvelle vente": "Feereli kura", "Relancer sur WhatsApp": "Hakili jigin WhatsApp kan", "Modifier le téléphone": "Telefɔni yɛlɛma", "Enregistrer": "Sɛbɛn", "Historique": "Tariku", "Payé": "Sara", "Montant reçu (FCFA)": "Wari min sɔrɔ (FCFA)", "Enregistrer le paiement": "Sara sɛbɛn", "Nom": "Tɔgɔ", "Ajouter le client": "Sanbaga fara a kan", "Nouveau client": "Sanbaga kura", "+ Nouveau client": "+ Sanbaga kura", "Mon stock": "N ka jagofɛnw", "Nouveau produit": "Fɛn kura", "+ Nouveau produit": "+ Fɛn kura", "Ajouter le produit": "Fɛn fara a kan", "+ Entrée": "+ Donni", "+ Sortie / livraison": "+ Bɔli", "Marchandises reçues": "Jagofɛn minnu sɔrɔla", "Livraisons et sorties": "Fɛn bɔlilenw", "Derniers mouvements": "Kɛta laban", "Stock bas": "Dɔɔnin tora", "En stock": "Bɛ yen", "Produit": "Fɛn", "Date": "Don", "Mon profil": "N ka kunnafoni", "Messages": "Cikanw", "Abonnement": "Abonema", "Mon abonnement": "N ka abonema", "Mon entreprise": "N ka baarakɛyɔrɔ", "Bilan et chiffres": "Jate ni hakɛw", "Mon bilan": "N ka jate", "Guide d'utilisation": "Baara kɛcogo", "Guide": "Bilasira", "Message de rappel WhatsApp": "Hakilijigin cikan (WhatsApp)", "Code secret": "Kɔdi gundo", "Sauvegarde et fichiers": "Marali ni sɛbɛnw", "Installer l'application": "Aplikasiyɔn sigi", "Contacter ZFNAFA sur WhatsApp": "ZFNAFA wele WhatsApp kan", "À propos de ZFNAFA": "ZFNAFA ko la", "Langue": "Kan", "Fermer": "Datugu", "Retour": "Segin", "Modifier": "Yɛlɛma", "Supprimer": "Bɔ", "Retirer": "Bɔ", "Ouvrir": "Da yɛlɛ", "Ouvrir ›": "Da yɛlɛ ›", "Aujourd'hui": "Bi", "Ce mois": "Nin kalo", "Dépenses": "Wari bɔlenw", "Dépenses du mois": "Kalo wari bɔlenw", "Bénéfice": "Nafa", "Équipe et salaires": "Baarakɛlaw ni sara", "Payer": "Sara", "Payé ce mois": "Sara kɛra nin kalo", "Ajouter": "Fara a kan", "Catégorie": "Suguya", "Montant (FCFA)": "Hakɛ (FCFA)", "Nouvelle dépense": "Wari bɔ kura", "Enregistrer la dépense": "Wari bɔ sɛbɛn", "Commandes": "Komandiw", "Commandes clients": "Sanbagaw ka komandiw", "Travaux": "Baaraw", "Rendez-vous": "Ɲɔgɔn sɔrɔ", "Encaisser": "Sara ta", "Oui, annuler": "Ɔn, ban", "Non, garder": "Ayi, a to yen", "Plus tard": "Kɔfɛ", "Copier": "Kopi", "Ventes": "Feereliw", "Dettes créées": "Juru kuraw", "Crédit accordé": "Juru dilen", "Dettes à récupérer": "Juru minnu ka kan ka sɔrɔ", "Ton nom": "I tɔgɔ", "Ton numéro WhatsApp": "I ka WhatsApp nimɔrɔ", "Ta ville": "I ka dugu", "Ton activité": "I ka baara", "Créer mon compte et commencer": "Kɔntɔ da, ka daminɛ", "Chercher un client": "Sanbaga ɲini", "Opérations du jour": "Bi ka kɛtaw", "Quantité": "Hakɛ", "Merci ! Ton compte est confirmé.": "I ni ce ! I ka kɔntɔ sɛbɛnna.", "Vente enregistrée": "Feereli sɛbɛnna", "Vente et dette enregistrées": "Feereli ni juru sɛbɛnna", "Client ajouté": "Sanbaga farala", "Produit ajouté": "Fɛn farala", "Opération annulée": "A banna", "Dépense enregistrée": "Wari bɔ sɛbɛnna", "Données restaurées": "Kunnafoniw segilen", "Paiement enregistré": "Sara sɛbɛnna", "Enregistré": "Sɛbɛnna", "Supprimé": "Bɔra", "Retiré": "Bɔra", "Thème": "Ɲɛnamaya", "Noir": "Fin", "Blanc": "Jɛ", "Monnaie restante à rendre au client (FCFA)": "Wari lasegin min ka kan ka di sanbaga ma (FCFA)", "Rendre la monnaie": "Wari lasegin di", "Monnaie rendue": "Wari lasegin dira", "Monnaie restante": "Wari lasegin", "Monnaie à rendre": "Wari lasegin min ka kan ka di", "Connecteur": "Ɲɔgɔnye", "Importer": "Don a la"} };
+  var I18N_RULES = [["^(\\d+) jours$", "", "tile $1"], ["^Reste à payer : (.+)$", "", "Tɔ sara kɛ : $1"], ["^doit (.+)$", "", "A ka juru : $1"], ["^Reste (.+)$", "", "Tɔ : $1"]];
+  var LANGS = [["fr", "Français"], ["mo", "Mooré"], ["di", "Dioula"]], LANG_HTML = { fr: "fr", mo: "mos", di: "dyu" };
+  var lang = (function () { try { var l = localStorage.getItem(LANG_KEY); return l === "mo" || l === "di" ? l : "fr"; } catch (e) { return "fr"; } })();
+  var trNodes = new Map(), trBusy = false, trObs = null;
+  function langName(l) { return LANGS.filter(function (x) { return x[0] === l; })[0][1]; }
+  function trText(t, l) {
+    var d = I18N[l]; if (!d) return null;
+    if (Object.prototype.hasOwnProperty.call(d, t)) return d[t];
+    for (var i = 0; i < I18N_RULES.length; i++) {
+      var r = I18N_RULES[i], to = l === "mo" ? r[1] : r[2]; if (!to) continue;
+      var re = new RegExp(r[0]); if (re.test(t)) return t.replace(re, to);
+    }
+    return null;
+  }
+  function trAttr(root) {
+    if (!root.querySelectorAll) return;
+    root.querySelectorAll("[placeholder],[aria-label],[title]").forEach(function (e) {
+      ["placeholder", "aria-label", "title"].forEach(function (a) {
+        var v = e.getAttribute(a); if (!v) return;
+        var o = e.getAttribute("data-fr-" + a);
+        if (o === null || e.getAttribute("data-tr-" + a) !== v) { o = v; e.setAttribute("data-fr-" + a, o); }
+        var t = lang === "fr" ? o : trText(o, lang);
+        if (t === null) t = o;
+        if (t !== v) { e.setAttribute(a, t); e.setAttribute("data-tr-" + a, t); }
+      });
+    });
+  }
+  function trWalk(root) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), n, list = [];
+    while ((n = w.nextNode())) list.push(n);
+    list.forEach(function (n) {
+      var cur = n.nodeValue, rec = trNodes.get(n);
+      if (rec && cur === rec.tr) { if (lang === "fr") { n.nodeValue = rec.fr; trNodes.delete(n); } else if (lang !== rec.lang) { var t2 = trText(rec.fr.trim(), lang); if (t2 !== null) { var lead2 = rec.fr.match(/^\s*/)[0], trail2 = rec.fr.match(/\s*$/)[0]; rec.tr = lead2 + t2 + trail2; rec.lang = lang; n.nodeValue = rec.tr; } else { n.nodeValue = rec.fr; trNodes.delete(n); } } return; }
+      if (lang === "fr") return;
+      var p = n.parentNode && n.parentNode.nodeName; if (p === "SCRIPT" || p === "STYLE" || p === "TEXTAREA") return;
+      var s = cur.trim(); if (!s) return;
+      var t = trText(s, lang); if (t === null) return;
+      var lead = cur.match(/^\s*/)[0], trail = cur.match(/\s*$/)[0], out = lead + t + trail;
+      trNodes.set(n, { fr: cur, tr: out, lang: lang }); n.nodeValue = out;
+    });
+    trNodes.forEach(function (v, k) { if (!k.isConnected) trNodes.delete(k); });
+    trAttr(root);
+  }
+  function trPass() {
+    if (trBusy) return; trBusy = true;
+    if (trObs) trObs.disconnect();
+    try { trWalk(document.body); document.documentElement.lang = LANG_HTML[lang]; } catch (e) {}
+    if (trObs) trObs.observe(document.body, { childList: true, subtree: true, characterData: true });
+    trBusy = false;
+  }
+  var trTimer = 0;
+  function trSoon() { if (trTimer) return; trTimer = requestAnimationFrame(function () { trTimer = 0; trPass(); }); }
+  function initLang() { trObs = new MutationObserver(trSoon); trPass(); }
+  function setLang(l) {
+    lang = l; try { localStorage.setItem(LANG_KEY, l); } catch (e) {}
+    closeSheet(); render(); trPass(); toast(l === "fr" ? "Français" : l === "mo" ? "Mooré" : "Dioula");
+  }
+  function langRow() {
+    return '<div class="langrow" role="group" aria-label="Langue">' + LANGS.map(function (x) { return '<button class="lg' + (x[0] === lang ? " on" : "") + '" data-act="setlang" data-l="' + x[0] + '">' + x[1] + "</button>"; }).join("") + "</div>";
+  }
+  function langSheet() {
+    openSheet("Langue",
+      '<div class="list">' + LANGS.map(function (x) { return '<button class="row" data-act="setlang" data-l="' + x[0] + '"><div class="main"><div class="name">' + x[1] + '</div></div>' + (x[0] === lang ? '<span class="pill ok">✓</span>' : "") + "</button>"; }).join("") + "</div>" +
+      '<div class="hint">Le Dioula et le Mooré sont en version d\'essai : certains mots restent en français. Un mot est faux ? Écris-nous sur WhatsApp, nous le corrigeons.</div>' +
+      '<a class="btn wa" href="' + ownerLink() + '" target="_blank" rel="noopener">Corriger une traduction</a>');
+  }
+
+  /* ---------- Connecteur : importer les ventes d'une boutique en ligne (fichier CSV) ---------- */
+  var cnPending = null;
+  function cnNorm(h) { return String(h).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim(); }
+  function cnParseCsv(text) {
+    text = String(text).replace(/^﻿/, "");
+    var first = text.split(/\r?\n/)[0] || "", delim = [";", "\t", ","].sort(function (a, b) { return first.split(b).length - first.split(a).length; })[0];
+    var rows = [], row = [], cur = "", q = false, i, ch;
+    for (i = 0; i < text.length; i++) {
+      ch = text[i];
+      if (q) { if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+      else if (ch === '"') q = true;
+      else if (ch === delim) { row.push(cur); cur = ""; }
+      else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; row.push(cur); cur = ""; if (row.some(function (x) { return x.trim() !== ""; })) rows.push(row); row = []; }
+      else cur += ch;
+    }
+    row.push(cur); if (row.some(function (x) { return x.trim() !== ""; })) rows.push(row);
+    return rows;
+  }
+  function cnNum(v) {
+    var s = String(v == null ? "" : v).replace(/[^\d,.\-]/g, ""); if (!s) return 0;
+    var lc = s.lastIndexOf(","), ld = s.lastIndexOf(".");
+    if (lc > -1 && ld > -1) { s = lc > ld ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, ""); }
+    else if (lc > -1) { s = /,\d{1,2}$/.test(s) ? s.replace(",", ".") : s.replace(/,/g, ""); }
+    else if (ld > -1 && !/\.\d{1,2}$/.test(s)) s = s.replace(/\./g, "");
+    var n = parseFloat(s); return isNaN(n) ? 0 : Math.max(0, Math.round(n));
+  }
+  function cnDate(v) {
+    var s = String(v || "").trim(), m;
+    if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/))) return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 12), +(m[5] || 0)).toISOString();
+    if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})(?:[ T](\d{1,2}):(\d{2}))?/))) return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 12), +(m[5] || 0)).toISOString();
+    return new Date().toISOString();
+  }
+  function cnCol(heads, words, not) { for (var w = 0; w < words.length; w++) for (var i = 0; i < heads.length; i++) if (heads[i].indexOf(words[w]) > -1 && !(not && not.some(function (n) { return heads[i].indexOf(n) > -1; }))) return i; return -1; }
+  function cnAnalyse(text) {
+    var rows = cnParseCsv(text); if (rows.length < 2) return { err: "Le fichier est vide ou ne ressemble pas à une liste de ventes." };
+    var heads = rows[0].map(cnNorm);
+    var cTotal = cnCol(heads, ["total", "montant", "amount", "prix", "price"], ["subtotal", "sous total", "tax", "taxe", "shipping", "livraison", "discount", "remise"]),
+      cDate = cnCol(heads, ["date", "created", "creation", "jour"]), cName = cnCol(heads, ["client", "customer", "billing name", "nom"], ["produit", "product", "article", "item"]),
+      cPhone = cnCol(heads, ["phone", "tel", "whatsapp", "mobile"]), cStat = cnCol(heads, ["financial status", "payment status", "statut", "status", "etat"]),
+      cPaid = cnCol(heads, ["amount paid", "montant paye", "paye", "paid", "acompte"], ["status", "statut"]), cRef = cnCol(heads, ["commande", "order", "numero", "reference", "ref", "name", "id"], ["client", "customer", "billing", "product", "produit"]);
+    if (cTotal < 0) return { err: "Je ne trouve pas la colonne du montant (Total, Montant, Amount…). Vérifie la première ligne de ton fichier." };
+    var out = { items: [], lost: [], dup: 0, cols: { date: cDate > -1, name: cName > -1, status: cStat > -1 } };
+    var known = {}; state.tx.forEach(function (t) { if (t.ref) known[(t.src || "") + "|" + t.ref] = 1; });
+    for (var r = 1; r < rows.length; r++) {
+      var x = rows[r], total = cnNum(x[cTotal]); if (total <= 0) continue;
+      var st = cStat > -1 ? cnNorm(x[cStat]) : "", ref = cRef > -1 && cRef !== cTotal ? String(x[cRef] || "").trim() : "";
+      var at = cDate > -1 ? cnDate(x[cDate]) : new Date().toISOString();
+      var bad = /refund|rembours|cancel|annul|void|echou|failed|retour|return/.test(st);
+      if (bad) { out.lost.push({ id: uid(), at: at, amount: total, ref: ref }); continue; }
+      if (ref && known[("boutique en ligne|" + ref)]) { out.dup++; continue; }
+      var unpaid = /pending|unpaid|attente|credit|crédit|due|authorized|non pay|impay|partial|partiel/.test(st);
+      var paid = cPaid > -1 && String(x[cPaid]).trim() !== "" ? Math.min(total, cnNum(x[cPaid])) : (unpaid ? 0 : total);
+      out.items.push({ at: at, total: total, paid: paid, name: cName > -1 ? String(x[cName] || "").trim() : "", phone: cPhone > -1 ? String(x[cPhone] || "").trim() : "", ref: ref });
+    }
+    return out;
+  }
+  function connectorSheet() {
+    var chips = ["Shopify", "WooCommerce", "Jumia / Kilimall", "Facebook / WhatsApp Business", "Excel, Google Sheets"].map(function (c) { return '<span class="chip">' + c + "</span>"; }).join("");
+    openSheet("Connecteur",
+      '<p style="margin:0">Importe les ventes de ta boutique en ligne dans ZFNAFA : ventes, crédits et ventes annulées apparaissent dans ton bilan.</p>' +
+      '<div class="chips">' + chips + "</div>" +
+      '<div class="field"><label>1. Dans ta boutique en ligne, exporte tes commandes en fichier CSV.<br>2. Choisis le fichier ici.</label><input type="file" id="cn-file" accept=".csv,.txt,text/csv,text/plain"></div>' +
+      '<div class="err" id="cn-err" role="alert"></div>' +
+      '<div class="rest" style="font-weight:500">Connexion automatique avec identifiant et mot de passe : pas encore disponible. Elle demande un serveur sécurisé. Ne donne jamais ton mot de passe à une application : les boutiques utilisent une autorisation spéciale à la place.</div>' +
+      '<a class="btn wa" href="' + ownerLink("Bonjour, je veux être prévenu quand la connexion automatique de ma boutique en ligne sera prête sur ZFNAFA. Mon identifiant : " + lic.id) + '" target="_blank" rel="noopener">Me prévenir quand elle sera prête</a>');
+  }
+  function cnPreview(res) {
+    if (res.err) { var e = document.getElementById("cn-err"); if (e) e.textContent = res.err; return; }
+    cnPending = res; var tot = 0, cr = 0, lost = 0; res.items.forEach(function (i) { tot += i.total; cr += i.total - i.paid; }); res.lost.forEach(function (l) { lost += l.amount; });
+    openSheet("Vérifie avant d'importer",
+      '<div class="pair"><div class="stat"><div class="lbl">Ventes à importer</div><div class="val num">' + res.items.length + '</div><div class="sub num">' + fmt(tot) + '</div></div>' +
+      '<div class="stat ' + (cr > 0 ? "debt" : "") + '"><div class="lbl">À crédit</div><div class="val num">' + fmt(cr) + '</div></div></div>' +
+      '<div class="pair"><div class="stat"><div class="lbl">Annulées ou remboursées</div><div class="val num">' + res.lost.length + '</div><div class="sub num">' + fmt(lost) + '</div></div>' +
+      '<div class="stat"><div class="lbl">Déjà importées</div><div class="val num">' + res.dup + '</div></div></div>' +
+      (cr > 0 && !res.cols.name ? '<div class="hint">Les ventes à crédit sans nom de client seront notées au nom « Client en ligne ».</div>' : "") +
+      '<div class="err" id="cn-err" role="alert"></div><div class="actions"><button class="btn" data-act="cnimport"' + (res.items.length || res.lost.length ? "" : " disabled") + '>Importer</button><button class="btn alt" data-act="connector">Choisir un autre fichier</button></div>');
+  }
+  function cnImport() {
+    var res = cnPending; if (!res) return;
+    function cid(name, phone) {
+      var nm = name || "Client en ligne", c = state.clients.filter(function (x) { return x.name.toLowerCase() === nm.toLowerCase(); })[0];
+      if (!c) { c = { id: uid(), name: nm, phone: phone || "", due: "", chg: 0 }; state.clients.push(c); } else if (!c.phone && phone) c.phone = phone;
+      return c.id;
+    }
+    res.items.forEach(function (i) {
+      var credit = i.total > i.paid;
+      state.tx.push({ id: uid(), at: i.at, clientId: (credit || i.name) ? cid(i.name, i.phone) : null, type: "sale", total: i.total, paid: i.paid, mode: "En ligne", note: "Boutique en ligne" + (i.ref ? " · " + i.ref : ""), productId: null, pqty: 0, chg: 0, src: "boutique en ligne", ref: i.ref });
+    });
+    if (!state.lost) state.lost = [];
+    res.lost.forEach(function (l) { state.lost.push({ id: l.id, at: l.at, amount: l.amount, ref: l.ref }); });
+    var n = res.items.length; cnPending = null; save(); closeSheet(); render(); toast(n + " vente" + (n > 1 ? "s" : "") + " importée" + (n > 1 ? "s" : ""));
+  }
+
+  /* ---------- Guide d'utilisation ---------- */
+  function guideSheet() {
+    var items = [
+      ["Noter une vente", '<ol><li>Touche le bouton vert <b>+ Vente</b> en bas à droite.</li><li>Écris le <b>montant</b> de la vente.</li><li>Choisis le <b>client</b>, ou laisse « Client de passage ».</li><li>Dans <b>Montant payé</b>, écris ce que le client a donné. Laisse vide s\'il a tout payé.</li><li>Choisis Espèces, Orange Money ou Moov Money, puis touche <b>Enregistrer la vente</b>.</li></ol><p>Si le client n\'a pas tout payé, le reste devient une dette. Pour noter une dette, choisis toujours un client.</p>'],
+      ["Suivre qui me doit", '<ol><li>Va sur <b>Accueil</b>. La liste <b>Qui me doit</b> montre les plus grosses dettes.</li><li>Touche un client pour voir tout son historique.</li><li>Quand il rembourse, touche <b>Encaisser un paiement</b> et écris le montant reçu.</li></ol>'],
+      ["Relancer un client sur WhatsApp", '<ol><li>Le client doit avoir un <b>numéro de téléphone</b>. Sinon, touche « Ajouter le n° » et écris-le.</li><li>Touche <b>Relancer</b> à côté de son nom.</li><li>WhatsApp s\'ouvre avec un message poli et le montant exact. Appuie sur <b>Envoyer</b>.</li></ol><p>Pour changer le message ou ajouter le nom de ta boutique, ouvre le menu <b>⋮</b> en haut à droite, puis touche « Message de rappel WhatsApp ».</p>'],
+      ["Gérer mon stock", '<ol><li>Va sur l\'onglet <b>Stock</b>.</li><li>Touche <b>+ Nouveau produit</b>. Écris le nom (ex : Riz 25 kg), l\'unité (sacs, cartons…) et la quantité que tu as aujourd\'hui. Tu peux mettre un seuil d\'alerte.</li><li>Quand de la marchandise arrive, touche <b>+ Entrée</b>. Choisis le produit, la quantité et la date.</li><li>Quand tu livres ou que tu sors de la marchandise, touche <b>+ Sortie / livraison</b>.</li></ol><p>En haut de l\'onglet, tu vois le total reçu et le total livré aujourd\'hui. Un produit presque fini s\'affiche en rouge « Stock bas ».</p>'],
+      ["Vendre et baisser le stock en même temps", '<p>Dans <b>+ Vente</b>, choisis le <b>Produit vendu</b> et la quantité. Le stock baisse tout seul, sans rien noter deux fois.</p>'],
+      ["Mon profil et mon identifiant", '<p>Ouvre le menu <b>⋮</b> en haut à droite, puis touche ton nom ou <b>Mon profil</b>. Tu y vois tes informations, ton identifiant et l\'état de ton abonnement. Touche <b>Modifier</b> pour corriger ton nom, ta boutique ou ton numéro.</p>'],
+      ["Abonnement", '<ol><li>Tu as 7 jours d\'essai gratuit.</li><li>Ensuite, l\'abonnement coûte 3 000 FCFA par mois.</li><li>Ouvre le menu <b>⋮</b> en haut à droite, puis touche <b>Abonnement</b>.</li><li>Envoie le montant par Orange Money ou Wave au numéro affiché.</li><li>Écris ton numéro de paiement, puis touche <b>J\'ai payé</b>. Ton identifiant est envoyé avec le message sur WhatsApp.</li><li>Nous vérifions ton paiement et tu reçois ton code.</li><li>Colle le code dans <b>J\'ai reçu mon code</b> et touche <b>Activer</b>.</li></ol><p>Si ton essai se termine, tes données restent en sécurité. Tu peux les sauvegarder avant de t\'abonner.</p>'],
+      ["Messages et fin d'abonnement", '<p>Quand tu as un nouveau message, un <b>point rouge</b> apparaît sur le menu ⋮. Touche <b>Messages</b> pour le lire.</p><p>Quand ton abonnement ou ton essai va se terminer, l\'application te prévient sur l\'accueil, dans une fenêtre et dans les messages. Dans <b>Abonnement</b>, un chronomètre montre le temps qui reste, jusqu\'aux secondes.</p>'],
+      ["Dicter une vente avec la voix", '<ol><li>Touche <b>+ Vente</b>, puis <b>Dicter la vente</b>.</li><li>Parle : « 5000 francs à Awa, payé 2000 » ou « 10 000 à crédit pour Boukary ».</li><li>Le formulaire se remplit. Vérifie, puis touche <b>Enregistrer la vente</b>.</li></ol><p>Il faut internet, le navigateur Chrome et l\'accès au micro. Dis « à crédit » pour une dette, « Orange Money » ou « Moov Money » pour le mode de paiement.</p>'],
+      ["Date de paiement et relances", '<p>Quand une vente est à crédit, choisis « Il doit payer avant le » (3, 7, 15 ou 30 jours). Le jour venu, le client monte en haut de <b>Qui me doit</b> avec la mention « en retard de … jours », et tu le relances en un geste. Tu peux aussi changer la date dans la fiche du client.</p>'],
+      ["Bilan et chiffres", '<p>Touche <b>Voir mon bilan</b> sur l\'accueil, ou ouvre le menu <b>⋮</b> puis <b>Bilan et chiffres</b>. Tu vois les ventes, ce qui est encaissé, le crédit accordé, les plus grosses dettes et les produits les plus vendus, pour aujourd\'hui, 7 jours ou 30 jours. Touche <b>Envoyer sur WhatsApp</b> pour partager le bilan.</p>'],
+      ["Envoyer un reçu au client", '<p>Sous chaque vente ou paiement, touche <b>Envoyer le reçu</b>. WhatsApp s\'ouvre avec le reçu déjà écrit (montant, payé, reste à payer).</p>'],
+      ["Code secret", '<p>Ouvre le menu <b>⋮</b>, touche <b>Code secret</b> et choisis 4 chiffres. Le code est demandé à l\'ouverture et quand tu reviens après une minute. Si tu l\'oublies, touche « J\'ai oublié mon code » et écris le numéro WhatsApp de ton compte. Tes données ne sont pas effacées.</p>'],
+      ["Installer l\'application et travailler sans internet", '<p>Dans le menu <b>⋮</b>, touche <b>Installer l\'application</b> (ou dans le menu de Chrome, « Installer l\'application »). ZFNAFA s\'ouvre alors comme une vraie application, avec son icône, et marche même sans internet. Les ventes sont gardées dans ton téléphone.</p>'],
+      ["Fichiers et Excel", '<p>Dans <b>Sauvegarde et fichiers</b>, tu peux télécharger ta sauvegarde en fichier, la liste de tes opérations et la liste de tes dettes. Les fichiers Excel s\'ouvrent avec Excel ou Google Sheets. Toutes les semaines, l\'application te rappelle de faire une sauvegarde.</p>'],
+      ["Mon entreprise (restaurant, garage, quincaillerie…)", '<p>Si tu as choisi une activité d\'<b>Entreprise</b> à l\'inscription, une carte <b>Mon entreprise</b> apparaît en haut de l\'accueil. Chaque partie a son coin :</p><ul><li><b>Commandes / Travaux / Rendez-vous</b> : note chaque client, fais-le avancer d\'une étape, puis touche <b>Encaisser</b>. La vente et la dette sont notées toutes seules.</li><li><b>Dépenses</b> : loyer, achats, électricité…</li><li><b>Équipe et salaires</b> : touche <b>Payer</b>, le salaire va dans les dépenses.</li><li><b>Bénéfice</b> = ce que tu as encaissé − tes dépenses, pour aujourd\'hui ou pour le mois.</li></ul><p>Tu peux changer ton activité dans <b>Mon profil → Modifier</b>.</p>'],
+      ["Connecteur : importer ma boutique en ligne", '<ol><li>Dans ta boutique en ligne (Shopify, WooCommerce, Jumia…), exporte tes commandes en fichier <b>CSV</b>.</li><li>Ouvre le menu <b>⋮</b>, touche <b>Connecteur</b>, puis choisis le fichier.</li><li>Vérifie le résumé : ventes, crédits, commandes annulées ou remboursées. Touche <b>Importer</b>.</li></ol><p>Les ventes importées apparaissent dans ton bilan et tes archives par jour. Une commande déjà importée n\'est jamais comptée deux fois. La connexion automatique avec identifiant et mot de passe n\'existe pas encore : elle demande un serveur sécurisé.</p>'],
+      ["Archives par jour", '<p>Chaque journée est enregistrée toute seule, avec sa date : les ventes du 1er, du 2 et du 3 ne se mélangent jamais. Touche <b>Archives par jour</b> sur l\'accueil (ou dans le menu <b>⋮</b>), puis une journée pour voir ses ventes, ses dettes créées, les paiements reçus, les dettes en fin de journée et le stock.</p><p>Touche <b>Télécharger le fichier du jour</b> pour garder un fichier Excel de cette journée dans ton téléphone. Chaque matin, l\'application te propose de télécharger le fichier de la veille. Elle garde aussi une copie automatique par jour (7 derniers jours) dans <b>Sauvegarde et fichiers</b>.</p>'],
+      ["Corriger une erreur", '<p>Sous chaque opération, touche <b>Annuler cette opération</b>, puis confirme. La dette et le stock reviennent comme avant.</p>'],
+      ["Sauvegarder mes données", '<ol><li>Ouvre le menu <b>⋮</b> en haut à droite, puis touche <b>Sauvegarde de mes données</b>.</li><li>Touche <b>Copier la sauvegarde</b>.</li><li>Colle-la dans une note ou envoie-la à toi-même sur WhatsApp.</li></ol><p>Tes données sont gardées dans ce téléphone. Fais une sauvegarde de temps en temps, surtout si tu changes de téléphone. Pour tout remettre, colle la sauvegarde dans « Restaurer une sauvegarde ».</p>']
+    ];
+    openSheet("Guide d'utilisation",
+      items.map(function (it, i) { return '<details class="gd"' + (i === 0 ? " open" : "") + "><summary>" + it[0] + '</summary><div class="body">' + it[1] + "</div></details>"; }).join("") + contactBlock());
+  }
+
+  /* ---------- Annuler une opération ---------- */
+  function askDel(kind, id) {
+    var msg;
+    if (kind === "expense" || kind === "staff" || kind === "order") {
+      msg = kind === "expense" ? "Cette dépense sera supprimée." : kind === "staff" ? "Cette personne sera retirée de ton équipe (ses dépenses déjà notées restent)." : "Cela sera supprimé de ta liste (aucune vente n'est retirée).";
+    } else if (kind === "tx") {
+      var t = state.tx.filter(function (x) { return x.id === id; })[0]; if (!t) return;
+      msg = t.type === "sale" ? "Cette vente de " + fmt(t.total) + " sera retirée, avec sa dette" + (t.productId ? " et la sortie de stock liée" : "") + "." : "Ce paiement de " + fmt(t.paid) + " sera retiré. La dette du client augmentera.";
+    } else {
+      var m = state.moves.filter(function (x) { return x.id === id; })[0]; if (!m) return;
+      if (m.saleId) { toast("Cette sortie vient d'une vente. Annule la vente pour la retirer."); return; }
+      var p = product(m.productId);
+      if (m.type === "in" && p && stockOf(p.id) - m.qty < 0) { toast("Impossible : une partie de cette entrée est déjà sortie."); return; }
+      msg = "Ce mouvement de " + m.qty + " " + (p ? p.unit : "") + " sera retiré du stock.";
+    }
+    openSheet("Annuler cette opération ?",
+      '<p style="margin:0">' + esc(msg) + "</p>" +
+      '<div class="actions"><button class="btn" data-act="dodel" data-kind="' + kind + '" data-id="' + id + '">Oui, annuler</button><button class="btn alt" data-act="close">Non, garder</button></div>');
+  }
+  function doDel(kind, id) {
+    if (kind === "expense") { B().expenses = B().expenses.filter(function (x) { return x.id !== id; }); save(); expensesSheet(); render(); toast("Supprimé"); return; }
+    if (kind === "staff") { B().staff = B().staff.filter(function (x) { return x.id !== id; }); save(); staffSheet(); toast("Retiré"); return; }
+    if (kind === "order") { B().orders = B().orders.filter(function (x) { return x.id !== id; }); save(); ordersSheet(); render(); toast("Supprimé"); return; }
+    if (kind === "tx") {
+      var dt = state.tx.filter(function (x) { return x.id === id; })[0];
+      if (dt && dt.chg > 0 && dt.clientId) { var dc2 = client(dt.clientId); if (dc2) dc2.chg = Math.max(0, (dc2.chg || 0) - dt.chg); }
+      state.tx = state.tx.filter(function (x) { return x.id !== id; });
+      state.moves = state.moves.filter(function (m) { return m.saleId !== id; });
+    } else state.moves = state.moves.filter(function (x) { return x.id !== id; });
+    save(); closeSheet(); render(); toast("Opération annulée");
+  }
+
+  /* ---------- Sauvegarde ---------- */
+  function backupSheet() {
+    openSheet("Sauvegarde",
+      '<p class="hint" style="margin:0">Tes données sont gardées dans ce téléphone. Copie la sauvegarde et colle-la dans une note ou un message à toi-même. Elle te permet de tout retrouver sur un autre téléphone.</p>' +
+      '<div class="field"><label for="bk-out">Ma sauvegarde</label><textarea id="bk-out" readonly>' + esc(JSON.stringify(state)) + "</textarea></div>" +
+      '<button class="btn" data-act="copybackup">Copier la sauvegarde</button>' +
+      '<div class="field"><label>Fichiers à télécharger</label><div class="actions"><button class="btn alt small" data-act="dlbackup">Sauvegarde (fichier)</button><button class="btn alt small" data-act="dlops">Opérations (Excel)</button><button class="btn alt small" data-act="dldebts">Dettes (Excel)</button></div></div>' + snapList() +
+      '<div class="field"><label for="bk-in">Restaurer une sauvegarde</label><textarea id="bk-in" placeholder="Colle ici la sauvegarde copiée"></textarea><input type="file" id="bk-file" accept=".json,application/json,text/plain"><div class="hint">Ou choisis le fichier de sauvegarde téléchargé avant.</div></div>' +
+      '<div class="err" id="bk-err" role="alert"></div>' +
+      '<button class="btn alt" data-act="restorebackup">Remplacer mes données par cette sauvegarde</button>');
+  }
+
+  /* ---------- Actions ---------- */
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-act]"); if (!el) return;
+    var act = el.getAttribute("data-act"), id = el.getAttribute("data-id");
+    if (act === "close") { if (e.target === el || el.classList.contains("x")) closeSheet(); return; }
+    if (el.closest(".menu")) closeSheet();
+    if (act === "tab") { view = el.getAttribute("data-tab"); render(); window.scrollTo(0, 0); }
+    else if (act === "menu") menuSheet()
+    else if (act === "messages") messagesSheet()
+    else if (act === "connector") connectorSheet()
+    else if (act === "cnimport") cnImport()
+    else if (act === "theme") themeSheet()
+    else if (act === "settheme") setTheme(el.getAttribute("data-t"))
+    else if (act === "lang") langSheet()
+    else if (act === "setlang") setLang(el.getAttribute("data-l"))
+    else if (act === "biz") bizSheet()
+    else if (act === "bizp") { bizP = el.getAttribute("data-p"); bizSheet(); }
+    else if (act === "stocktab") { closeSheet(); view = "stock"; render(); window.scrollTo(0, 0); }
+    else if (act === "expenses") expensesSheet()
+    else if (act === "newexp") newExpenseSheet()
+    else if (act === "saveexp") saveExpense()
+    else if (act === "staff") staffSheet()
+    else if (act === "newstaff") newStaffSheet()
+    else if (act === "savestaff") saveStaff()
+    else if (act === "paystaff") payStaff(id)
+    else if (act === "orders") ordersSheet()
+    else if (act === "neworder") newOrderSheet()
+    else if (act === "saveorder") saveOrder()
+    else if (act === "advance") advanceOrder(id)
+    else if (act === "doorder") doOrder(id)
+    else if (act === "archives") archivesSheet()
+    else if (act === "day") daySheet(el.getAttribute("data-k"))
+    else if (act === "dlday") { var kd = el.getAttribute("data-k"); if (downloadFile("ZFNAFA-journee-" + kd + ".csv", dayCsv(kd), "text/csv;charset=utf-8")) { lsSet("zfnafa.dl." + kd, "1"); render(); toast("Fichier du " + dMid(kd) + " téléchargé"); } else toast("Téléchargement impossible sur ce navigateur."); }
+    else if (act === "dlall") { if (downloadFile("ZFNAFA-toutes-les-journees-" + todayStr() + ".csv", allDaysCsv(), "text/csv;charset=utf-8")) toast("Fichier téléchargé"); else toast("Téléchargement impossible sur ce navigateur."); }
+    else if (act === "snaprestore") snapConfirm(el.getAttribute("data-k"))
+    else if (act === "snapdo") snapRestore(el.getAttribute("data-k"))
+    else if (act === "report") reportSheet(el.getAttribute("data-r") || "today")
+    else if (act === "rep") reportSheet(el.getAttribute("data-r"))
+    else if (act === "copyreport") copyText(lastReport, "Bilan copié")
+    else if (act === "voice") startVoice()
+    else if (act === "duein") { var di = document.getElementById("s-duedate"); if (di) di.value = plusDaysStr(+el.getAttribute("data-d")); }
+    else if (act === "savedue") { var cc = client(id); if (cc) { var dv = val("c-due"); cc.due = /^\d{4}-\d{2}-\d{2}$/.test(dv) ? dv : ""; save(); clientSheet(id); render(); toast(cc.due ? "Date enregistrée" : "Date retirée"); } }
+    else if (act === "pin") pinSheet()
+    else if (act === "pinkey") pinKey(el.getAttribute("data-k"))
+    else if (act === "pinset") pinSet()
+    else if (act === "pinchange") pinChange()
+    else if (act === "pinremove") pinRemove()
+    else if (act === "pinforgot") pinForgot()
+    else if (act === "pinreset") pinReset()
+    else if (act === "install") doInstall()
+    else if (act === "noinstall") { lsSet("zfcahier.noinstall", "1"); render(); }
+    else if (act === "dlbackup") { if (downloadFile("ZFNAFA-sauvegarde-" + todayStr() + ".json", JSON.stringify(state), "application/json")) { markBackup(); toast("Fichier de sauvegarde téléchargé"); } else toast("Téléchargement impossible, utilise « Copier la sauvegarde »."); }
+    else if (act === "dlops") { if (downloadFile("ZFNAFA-operations-" + todayStr() + ".csv", opsCsv(), "text/csv;charset=utf-8")) toast("Fichier téléchargé"); else toast("Téléchargement impossible sur ce navigateur."); }
+    else if (act === "dldebts") { if (downloadFile("ZFNAFA-dettes-" + todayStr() + ".csv", debtsCsv(), "text/csv;charset=utf-8")) toast("Fichier téléchargé"); else toast("Téléchargement impossible sur ce navigateur."); }
+    else if (act === "profile") profileSheet()
+    else if (act === "editprofile") editProfileSheet()
+    else if (act === "saveprofile") saveProfileEdit()
+    else if (act === "guide") guideSheet()
+    else if (act === "sub") subSheet()
+    else if (act === "signup") signup()
+    else if (act === "notified") markNotified()
+    else if (act === "copytxt") {
+      var tx = el.getAttribute("data-txt");
+      try { navigator.clipboard.writeText(tx).then(function () { toast("Numéro copié"); }, function () { toast("Appui long sur le numéro pour le copier"); }); } catch (er) { toast("Appui long sur le numéro pour le copier"); }
+    } else if (act === "copyid") {
+      try { navigator.clipboard.writeText(lic.id).then(function () { toast("Identifiant copié"); }, function () { toast("Appui long sur l'identifiant pour le copier"); }); } catch (er) { toast("Appui long sur l'identifiant pour le copier"); }
+    } else if (act === "activate") {
+      var ae = document.getElementById("ac-err"); ae.textContent = "Vérification…";
+      activate(document.getElementById("ac-code").value).then(function (r) {
+        if (!r.ok) { ae.textContent = r.msg; return; }
+        closeSheet(); view = "today"; render(); toast("Abonnement actif jusqu'au " + fmtDate(r.until));
+      });
+    }
+    else if (act === "askdel") askDel(el.getAttribute("data-kind"), id)
+    else if (act === "dodel") doDel(el.getAttribute("data-kind"), id)
+    else if (act === "backup") backupSheet()
+    else if (act === "copybackup") {
+      var ta = document.getElementById("bk-out"); ta.focus(); ta.select();
+      var done = function () { markBackup(); toast("Sauvegarde copiée"); };
+      try { navigator.clipboard.writeText(ta.value).then(done, function () { toast("Appui long sur le texte pour le copier"); }); } catch (er) { toast("Appui long sur le texte pour le copier"); }
+    } else if (act === "restorebackup") {
+      var raw = document.getElementById("bk-in").value.trim(), be = document.getElementById("bk-err"), np = null;
+      try { np = cleanState(JSON.parse(raw)); } catch (er) { np = null; }
+      if (!np) { be.textContent = "Cette sauvegarde n'est pas valide. Copie-la de nouveau en entier."; return; }
+      state = np; save(); closeSheet(); render(); toast("Données restaurées");
+    }
+    else if (act === "movein") moveSheet("in", id)
+    else if (act === "moveout") moveSheet("out", id)
+    else if (act === "savemove") saveMove(el.getAttribute("data-type"))
+    else if (act === "newproduct") newProductSheet()
+    else if (act === "saveproduct") saveProduct()
+    else if (act === "product") productSheet(id)
+    else if (act === "settings") settingsSheet()
+    else if (act === "savesettings") {
+      state.settings = { shop: document.getElementById("st-shop").value.trim(), template: document.getElementById("st-tpl").value.trim() };
+      save(); closeSheet(); render(); toast("Message enregistré");
+    } else if (act === "resettpl") { document.getElementById("st-tpl").value = DEFAULT_TPL; }
+    else if (act === "start") { markIntro(); view = "today"; render(); window.scrollTo(0, 0); }
+    else if (act === "intro") { view = "intro"; render(); window.scrollTo(0, 0); }
+    else if (act === "sale") saleSheet();
+    else if (act === "saleclient") saleSheet(id);
+    else if (act === "client") clientSheet(id);
+    else if (act === "paysheet") paySheet(id);
+    else if (act === "chgsheet") chgSheet(id);
+    else if (act === "savechg") saveChg(id);
+    else if (act === "savepay") savePay(id);
+    else if (act === "savesale") saveSale();
+    else if (act === "newclient") newClientSheet();
+    else if (act === "allpaid") { document.getElementById("s-paid").value = document.getElementById("s-total").value; updateRest(); }
+    else if (act === "credit") { document.getElementById("s-paid").value = "0"; updateRest(); }
+    else if (act === "savephone") {
+      var c = client(id); c.phone = document.getElementById("c-phone").value.trim(); save(); clientSheet(id); render(); toast("Numéro enregistré");
+    } else if (act === "saveclient") {
+      var nm = document.getElementById("n-name").value.trim();
+      if (!nm) { document.getElementById("n-err").textContent = "Écris le nom du client."; return; }
+      state.clients.push({ id: uid(), name: nm, phone: document.getElementById("n-phone").value.trim() });
+      save(); closeSheet(); render(); toast("Client ajouté");
+    } else if (act === "clear") { state = { demo: false, clients: [], tx: [], products: [], moves: [], settings: state.settings || { shop: "", template: "" } }; save(); render(); toast("Cahier vide, à toi de jouer"); }
+  });
+  document.addEventListener("input", function (e) {
+    var id = e.target.id;
+    if (id === "q") { query = e.target.value; var pos = e.target.selectionStart; render(); var q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos, pos); }
+    if (id === "s-total" || id === "s-paid") { updateRest(); }
+    if (id === "pay-from") updatePaid();
+  });
+  document.addEventListener("change", function (e) {
+    if (e.target.id === "s-client") document.getElementById("s-new").hidden = e.target.value !== "__new";
+    if (e.target.id === "m-prod") document.getElementById("m-new").hidden = e.target.value !== "__new";
+    if (e.target.id === "s-prod") document.getElementById("s-pq").hidden = !e.target.value;
+    if (e.target.id === "pay-via") updatePaid();
+    if (e.target.id === "cn-file" && e.target.files && e.target.files[0]) { var fc = new FileReader(); fc.onload = function () { cnPreview(cnAnalyse(fc.result)); }; fc.onerror = function () { var er = document.getElementById("cn-err"); if (er) er.textContent = "Impossible de lire ce fichier."; }; fc.readAsText(e.target.files[0]); }
+    if (e.target.id === "bk-file" && e.target.files && e.target.files[0]) { var fr = new FileReader(); fr.onload = function () { var ta = document.getElementById("bk-in"); if (ta) ta.value = String(fr.result || ""); }; fr.readAsText(e.target.files[0]); }
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSheet(); });
+
+  save();
+  autoSnap();
+  syncAutoMessages();
+  render();
+  initLang();
+  applyTheme();
+  maybeWarn();
+  fetchFeed();
+  setInterval(tick, 1000);
+  setNet();
+  window.addEventListener("online", setNet); window.addEventListener("offline", setNet);
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(function () {});
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (pinData && !pinLocked && hiddenAt && Date.now() - hiddenAt > 60000) { pinLocked = true; pinBuf = ""; closeSheet(); render(); }
+    autoSnap(); tick(); maybeWarn(); if (Date.now() - lastFetch > 600000) fetchFeed();
+    if (appVisible() && view === "today" && document.getElementById("overlay").innerHTML === "") render();
+  });
+})();
+</script>
+
+</body>
+</html>
